@@ -1,59 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { useState } from "react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import React from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 type TextInputProps = {
   name: string;
-  label?: string;
-  control: any;
-  defaultValue?: string;
-  variant?: "outlined" | "standard" | "filled";
-  type?: string;
+  label: string;
   placeholder?: string;
+  type?: string;
+  variant?: "outlined" | "standard" | "filled";
   required?: boolean;
+  defaultValue?: string;
   fullWidth?: boolean;
 };
 
 const TextInput = ({
   name,
   label,
-  control,
-  variant = "outlined",
-  type = "text",
-  defaultValue = "",
   placeholder,
+  type = "text",
+  variant = "outlined",
   required = false,
+  defaultValue = "",
   fullWidth = true,
 }: TextInputProps) => {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const { control } = useFormContext();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleTogglePassword = () => setShowPassword((prev) => !prev);
+  const isPassword = type === "password";
 
-  const isPasswordType = type === "password";
+  const toggleVisibility = () => setShowPassword((prev) => !prev);
 
   return (
     <Controller
       name={name}
       control={control}
       rules={{ required }}
+      defaultValue={defaultValue}
       render={({ field, fieldState }) => (
         <TextField
           {...field}
           label={label}
-          defaultValue={defaultValue}
-          variant={variant}
-          type={isPasswordType && !showPassword ? "password" : "text"}
           placeholder={placeholder}
+          type={isPassword && !showPassword ? "password" : "text"}
+          variant={variant}
           fullWidth={fullWidth}
-          error={!!fieldState.error}
-          helperText={fieldState.error ? "This field is required" : ""}
           margin="normal"
+          error={!!fieldState.error}
+          helperText={fieldState.error ? `${label} is required` : ""}
           InputProps={{
-            endAdornment: isPasswordType && (
+            endAdornment: isPassword && (
               <InputAdornment position="end">
-                <IconButton onClick={handleTogglePassword} edge="end">
+                <IconButton onClick={toggleVisibility} edge="end">
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>

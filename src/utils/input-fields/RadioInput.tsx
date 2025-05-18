@@ -7,7 +7,7 @@ import {
   RadioGroup,
   FormHelperText,
 } from "@mui/material";
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 type Option = {
   label: string;
@@ -17,7 +17,6 @@ type Option = {
 type RadioInputProps = {
   name: string;
   label: string;
-  control: any;
   options: Option[];
   required?: boolean;
 };
@@ -25,10 +24,11 @@ type RadioInputProps = {
 const RadioInput = ({
   name,
   label,
-  control,
   options,
   required = false,
 }: RadioInputProps) => {
+  const { control } = useFormContext();
+
   return (
     <FormControl component="fieldset" fullWidth>
       <FormLabel component="legend">{label}</FormLabel>

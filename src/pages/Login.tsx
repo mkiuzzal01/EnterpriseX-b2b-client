@@ -1,7 +1,8 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
 import TextInput from "../utils/input-fields/TextInput";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import type { SubmitHandler } from "react-hook-form";
+import ReusableForm from "../shared/ReusableFrom";
 
 type FormValues = {
   email: string;
@@ -9,47 +10,44 @@ type FormValues = {
 };
 
 const Login = () => {
-  const { control, handleSubmit } = useForm<FormValues>();
-
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
     if (data.email === "demo@gmail.com" && data.password === "12345") {
       alert("Login successful!");
+    } else {
+      alert("Invalid credentials");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-2xl font-bold">
-          {" "}
-          <h1 className="text-2xl font-bold mb-4">
-            Login with Enterprise<span className="text-yellow-400">X</span>
-          </h1>
-        </h1>
-        <div className="w-80 bg-white p-6 rounded shadow">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold mb-4">
+        Login with Enterprise<span className="text-yellow-400">X</span>
+      </h1>
+
+      <div className="w-80 bg-white p-6 rounded shadow">
+        <ReusableForm
+          onSubmit={onSubmit}
+          defaultValues={{ email: "demo@gmail.com", password: "12345" }}
+        >
           <TextInput
             name="email"
-            defaultValue="demo@gmail.com"
             label="Email"
             type="email"
             variant="standard"
             placeholder="Enter your email"
-            control={control}
             required
           />
           <TextInput
             name="password"
             label="Password"
             type="password"
-            defaultValue="12345"
             variant="standard"
             placeholder="Enter your password"
-            control={control}
             required
           />
-          <div className="text-sm">
-            <Link to={"/"}>forget password?</Link>
+          <div className="text-sm mb-2">
+            <Link to={"/"}>Forget password?</Link>
           </div>
           <Button
             type="submit"
@@ -57,7 +55,7 @@ const Login = () => {
             color="primary"
             sx={{
               width: "100%",
-              marginTop: "16px",
+              marginTop: "8px",
               backgroundColor: "#1E40AF",
               boxShadow: "none",
               "&:hover": {
@@ -75,9 +73,9 @@ const Login = () => {
               </Link>
             </p>
           </div>
-        </div>
+        </ReusableForm>
       </div>
-    </form>
+    </div>
   );
 };
 

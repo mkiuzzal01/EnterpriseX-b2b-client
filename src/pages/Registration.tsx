@@ -1,7 +1,11 @@
-import { useForm } from "react-hook-form";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import TextInput from "../utils/input-fields/TextInput";
 import DateInput from "../utils/input-fields/DateInput";
-import RadioInput from "../utils/input-fields/RadioInput";
+import SelectInputField from "../utils/input-fields/SelectInputField";
+import ReusableForm from "../shared/ReusableFrom";
 
 type RegistrationProps = {
   password?: string;
@@ -28,103 +32,128 @@ type RegistrationProps = {
 };
 
 const Registration = () => {
-  const { control, handleSubmit } = useForm<RegistrationProps>();
+  const [role, setRole] = useState<string>("");
+  const [isSeller, setIsSeller] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsSeller(role === "Seller");
+  }, [role]);
 
   const onSubmit = (data: RegistrationProps) => {
-    console.log(data);
+    console.log("Form Data:", data);
     alert("Registration successful!");
   };
+
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col justify-center items-center h-screen">
-          <div>
-            <h1 className="text-2xl font-bold mb-4">
-              Register with Enterprise<span className="text-yellow-400">X</span>
-            </h1>
-          </div>
-          <div className="bg-white p-6 rounded shadow w-80">
-            <TextInput
-              name="firstName"
-              label="First name"
-              type="text"
-              variant="outlined"
-              placeholder="Enter yor first name"
-              control={control}
-            />
-            <TextInput
-              name="middleName"
-              label="Middle name"
-              type="text"
-              variant="outlined"
-              placeholder="Enter your middle name"
-              control={control}
-            />
-            <TextInput
-              name="lastName"
-              label="Last name"
-              type="text"
-              variant="outlined"
-              placeholder="Enter your last name"
-              control={control}
-            />
-            <TextInput
-              name="email"
-              label="Email"
-              type="email"
-              variant="outlined"
-              placeholder="Enter your email"
-              control={control}
-            />
+    <Box className="flex flex-col items-center p-4 sm:p-8 bg-gray-100 min-h-screen">
+      <ReusableForm onSubmit={onSubmit}>
+        <Box className="w-full max-w-6xl bg-white p-6 sm:p-10 rounded shadow">
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            User Information
+          </Typography>
+          <Typography variant="body1" color="textSecondary" gutterBottom>
+            Please fill in authentic details below.
+          </Typography>
 
-            <TextInput
-              name="phone"
-              label="Phone"
-              type="tel"
-              variant="outlined"
-              placeholder="Enter your phone number"
-              control={control}
+          <Box mb={2}>
+            <SelectInputField
+              name="role"
+              label="Role"
+              options={["Admin", "Seller"]}
+              requiredMessage="Select a role"
+              onChange={(value) => setRole(value)}
             />
+          </Box>
 
-            <TextInput
-              name="nid"
-              label="NID"
-              type="text"
-              variant="outlined"
-              placeholder="Enter your NID number"
-              control={control}
-            />
-            <DateInput
-              name="dateOfBirth"
-              label="Date of Birth"
-              control={control}
-              required
-            />
-            <RadioInput
-              name="gender"
-              label="Gender"
-              control={control}
-              required
-              options={[
-                { label: "Male", value: "male" },
-                { label: "Female", value: "female" },
-                { label: "Others", value: "other" },
-              ]}
-            />
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="firstName" label="First Name" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="middleName" label="Middle Name" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="lastName" label="Last Name" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="email" label="Email" type="email" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="phone" label="Phone" type="tel" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <TextInput name="nid" label="NID" type="number" required />
+            </Grid>
+            {isSeller && (
+              <>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <SelectInputField
+                    name="paymentMethod"
+                    label="Payment Method"
+                    options={["Bank Transfer", "Mobile Banking"]}
+                    requiredMessage="Payment method is required"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <SelectInputField
+                    name="bankName"
+                    label="Bank Name"
+                    options={["DBBL", "City Bank", "Brac Bank"]}
+                    requiredMessage="Bank name is required"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <TextInput
+                    name="accountNumber"
+                    label="Account Number"
+                    type="text"
+                    required
+                  />
+                </Grid>
+              </>
+            )}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextInput
+                name="presentAddress"
+                label="Present Address"
+                required
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextInput
+                name="permanentAddress"
+                label="Permanent Address"
+                required
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <DateInput name="dateOfBirth" label="Date of Birth" required />
+            </Grid>
 
-            <TextInput
-              name="password"
-              defaultValue="12345"
-              label="Password"
-              type="password"
-              variant="outlined"
-              placeholder="Enter your password"
-              control={control}
-            />
-          </div>
-        </div>
-      </form>
-    </div>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextInput
+                name="password"
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 12 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                size="large"
+              >
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </ReusableForm>
+    </Box>
   );
 };
 

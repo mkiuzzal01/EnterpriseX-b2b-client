@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -8,7 +8,6 @@ import dayjs, { Dayjs } from "dayjs";
 type DateInputProps = {
   name: string;
   label?: string;
-  control: any;
   required?: boolean;
   fullWidth?: boolean;
 };
@@ -16,10 +15,11 @@ type DateInputProps = {
 const DateInput = ({
   name,
   label,
-  control,
   required = false,
   fullWidth = true,
 }: DateInputProps) => {
+  const { control } = useFormContext();
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Controller
