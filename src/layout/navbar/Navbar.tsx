@@ -38,9 +38,9 @@ const Navbar = ({ setSidebarOpen, isSidebarOpen }: NavbarProps) => {
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div>
-          <h1 className="text-white text-2xl font-bold">
+          <Link to={"/"} className="text-white text-2xl font-bold">
             Enterprise<span className="text-yellow-400">X</span>
-          </h1>
+          </Link>
         </div>
 
         {/* Navigation Icons & User Menu */}

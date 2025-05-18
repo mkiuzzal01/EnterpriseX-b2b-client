@@ -1,6 +1,7 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import TextInput from "../utils/input-fields/TextInput";
 import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 type FormValues = {
   email: string;
@@ -20,7 +21,12 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-2xl font-bold mb-4">Login</h1>
+        <h1 className="text-2xl font-bold">
+          {" "}
+          <h1 className="text-2xl font-bold mb-4">
+            Login with Enterprise<span className="text-yellow-400">X</span>
+          </h1>
+        </h1>
         <div className="w-80 bg-white p-6 rounded shadow">
           <TextInput
             name="email"
@@ -42,12 +48,33 @@ const Login = () => {
             control={control}
             required
           />
+          <div className="text-sm">
+            <Link to={"/"}>forget password?</Link>
+          </div>
           <Button
             type="submit"
-            className="w-full mt-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+            variant="contained"
+            color="primary"
+            sx={{
+              width: "100%",
+              marginTop: "16px",
+              backgroundColor: "#1E40AF",
+              boxShadow: "none",
+              "&:hover": {
+                backgroundColor: "#1D4ED8",
+              },
+            }}
           >
             Login
           </Button>
+          <div>
+            <p className="text-sm mt-4">
+              Don't have an account?{" "}
+              <Link to={"/register"} className="text-blue-500">
+                Register
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </form>

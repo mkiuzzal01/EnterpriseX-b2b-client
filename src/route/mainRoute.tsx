@@ -4,6 +4,7 @@ import Notification from "../components/notification/Notification";
 import Profile from "../components/profile/Profile";
 import Overview from "../components/overview/Overview";
 import Login from "../pages/Login";
+import Registration from "../pages/Registration";
 
 export const route = createBrowserRouter([
   {
@@ -27,5 +28,9 @@ export const route = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Registration />,
   },
 ]);
