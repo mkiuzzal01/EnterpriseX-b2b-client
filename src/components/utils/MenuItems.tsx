@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
 
 type MenuItemsProps = {
-  route: string;
+  route?: string;
   icon?: ReactNode;
   name?: string;
 };
