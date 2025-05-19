@@ -41,7 +41,6 @@ const Registration = () => {
 
   const onSubmit = (data: RegistrationProps) => {
     console.log("Form Data:", data);
-    alert("Registration successful!");
   };
 
   return (
@@ -86,7 +85,7 @@ const Registration = () => {
             </Grid>
             {isSeller && (
               <>
-                <Grid size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <SelectInputField
                     name="paymentMethod"
                     label="Payment Method"
@@ -94,7 +93,7 @@ const Registration = () => {
                     requiredMessage="Payment method is required"
                   />
                 </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <SelectInputField
                     name="bankName"
                     label="Bank Name"
@@ -102,7 +101,7 @@ const Registration = () => {
                     requiredMessage="Bank name is required"
                   />
                 </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 12 }}>
                   <TextInput
                     name="accountNumber"
                     label="Account Number"
@@ -131,6 +130,10 @@ const Registration = () => {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
+              <DateInput name="joiningData" label="Joining Date" required />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 12 }}>
               <TextInput
                 name="password"
                 label="Password"
@@ -147,7 +150,7 @@ const Registration = () => {
                 fullWidth
                 size="large"
               >
-                Submit
+                Register
               </Button>
             </Grid>
           </Grid>

@@ -5,11 +5,13 @@ import Profile from "../components/profile/Profile";
 import Overview from "../components/overview/Overview";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
+import NotFound from "../pages/NotFound";
 
 export const route = createBrowserRouter([
   {
     path: "/",
     element: <Index />,
+    errorElement: <NotFound />,
     children: [
       {
         index: true,
