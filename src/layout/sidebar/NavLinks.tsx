@@ -1,5 +1,5 @@
 import { BsGraphUpArrow } from "react-icons/bs";
-import { IoMdPerson } from "react-icons/io";
+import { IoMdPerson, IoMdPersonAdd } from "react-icons/io";
 
 export const NavLinks = [
   {
@@ -15,6 +15,17 @@ export const NavLinks = [
         name: "View Profile",
         icon: <IoMdPerson />,
         route: "/profile",
+      },
+    ],
+  },
+  {
+    name: "Users",
+    icon: <IoMdPersonAdd />,
+    children: [
+      {
+        name: "Create users",
+        icon: <IoMdPersonAdd />,
+        route: "/create-user",
       },
     ],
   },

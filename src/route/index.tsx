@@ -26,7 +26,7 @@ export const route = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "/register",
+        path: "/create-user",
         element: <Registration />,
       },
     ],

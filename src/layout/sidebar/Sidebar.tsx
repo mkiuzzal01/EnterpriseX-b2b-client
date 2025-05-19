@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
-import { NavLinks } from "./Navigation";
+import { NavLinks } from "./NavLinks";
 import MenuItems from "../../components/utils/MenuItems";
 
 const Sidebar = () => {

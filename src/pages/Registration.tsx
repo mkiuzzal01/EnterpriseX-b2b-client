@@ -138,6 +138,7 @@ const Registration = () => {
                 name="password"
                 label="Password"
                 type="password"
+                defaultValue="12345"
                 placeholder="Enter your password"
               />
             </Grid>
@@ -150,7 +151,7 @@ const Registration = () => {
                 fullWidth
                 size="large"
               >
-                Register
+                Create
               </Button>
             </Grid>
           </Grid>
