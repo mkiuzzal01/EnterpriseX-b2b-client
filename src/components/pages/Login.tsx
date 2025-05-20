@@ -1,8 +1,8 @@
-import TextInput from "../utils/input-fields/TextInput";
+import TextInput from "../../utils/input-fields/TextInput";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import type { SubmitHandler } from "react-hook-form";
-import ReusableForm from "../shared/ReusableFrom";
+import ReusableForm from "../../shared/ReusableFrom";
 
 type FormValues = {
   email: string;

@@ -11,10 +11,10 @@ const Index = () => {
     <div className="flex flex-col h-screen">
       <Navbar setSidebarOpen={setSidebarOpen} isSidebarOpen={isSidebarOpen} />
 
-      <div className="flex flex-1 relative">
+      <div className="flex flex-1 relative ">
         <aside
           className={`bg-[#274963] h-[calc(100vh-70px)] transition-all duration-1000 ease-in-out
-          lg:static lg:block lg:w-1/6 
+          lg:static lg:block lg:w-1/6 overflow-y-auto no-scrollbar 
           ${isSidebarOpen ? "absolute z-30 w-4/5 block" : "hidden"}`}
         >
           <Sidebar />

@@ -56,7 +56,7 @@ export const NavLinks = [
       {
         name: "Add Product",
         icon: <FaPlus />,
-        route: "/add-product",
+        route: "/create-product",
       },
       {
         name: "All products",

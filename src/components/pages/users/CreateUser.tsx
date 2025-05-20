@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import TextInput from "../utils/input-fields/TextInput";
-import DateInput from "../utils/input-fields/DateInput";
-import SelectInputField from "../utils/input-fields/SelectInputField";
-import ReusableForm from "../shared/ReusableFrom";
+import ReusableForm from "../../../shared/ReusableFrom";
+import SelectInputField from "../../../utils/input-fields/SelectInputField";
+import TextInput from "../../../utils/input-fields/TextInput";
+import DateInput from "../../../utils/input-fields/DateInput";
 
 type RegistrationProps = {
   password?: string;
