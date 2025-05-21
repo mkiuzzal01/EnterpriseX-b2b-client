@@ -1,21 +1,7 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Typography,
-  IconButton,
-  Paper,
-  Card,
-  CardContent,
-  Stack,
-  Chip,
-} from "@mui/material";
-import ReusableForm from "../../../shared/ReusableFrom";
+import { Box, Button, Grid, Typography, Paper } from "@mui/material";
 import TextInput from "../../../utils/input-fields/TextInput";
 import SelectInputField from "../../../utils/input-fields/SelectInputField";
 import { useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CategoryIcon from "@mui/icons-material/Category";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import InventoryIcon from "@mui/icons-material/Inventory";
@@ -24,6 +10,8 @@ import StyleIcon from "@mui/icons-material/Style";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SaveIcon from "@mui/icons-material/Save";
 import SectionHeader from "../../../utils/section/SectionHeader";
+import ReusableForm from "../../../shared/ReusableFrom";
+import VariantsSection from "../../utils/VariantsSection";
 
 type Attribute = {
   value: string;
@@ -35,7 +23,7 @@ type Variant = {
   attributes: Attribute[];
 };
 
-type CreateProductProps = {
+type CreateProductFormData = {
   productCode: string;
   title: string;
   subTitle: string;
@@ -43,13 +31,13 @@ type CreateProductProps = {
   price: number;
   discount: number;
   parentageForSeller: number;
-  variants: Variant[];
   mainCategory: string;
   category: string;
   subCategory: string;
   description: string;
   status: string;
   activity: string;
+  variantsData: string;
 };
 
 const CreateProduct = () => {
@@ -57,64 +45,51 @@ const CreateProduct = () => {
     { name: "", attributes: [{ value: "", quantity: 0 }] },
   ]);
 
-  const addVariant = () => {
-    setVariants([
-      ...variants,
-      { name: "", attributes: [{ value: "", quantity: 0 }] },
-    ]);
-  };
+  const onSubmit = (data: CreateProductFormData) => {
+    try {
+      const parsedVariants = JSON.parse(data.variantsData || "[]");
+      const formData = {
+        ...data,
+        variants: parsedVariants,
+      };
 
-  const removeVariant = (variantIndex: number) => {
-    const newVariants = variants.filter((_, index) => index !== variantIndex);
-    setVariants(
-      newVariants.length
-        ? newVariants
-        : [{ name: "", attributes: [{ value: "", quantity: 0 }] }]
-    );
-  };
-
-  const addAttribute = (variantIndex: number) => {
-    const newVariants = [...variants];
-    newVariants[variantIndex].attributes.push({ value: "", quantity: 0 });
-    setVariants(newVariants);
-  };
-
-  const removeAttribute = (variantIndex: number, attributeIndex: number) => {
-    const newVariants = [...variants];
-    if (newVariants[variantIndex].attributes.length > 1) {
-      newVariants[variantIndex].attributes = newVariants[
-        variantIndex
-      ].attributes.filter((_, index) => index !== attributeIndex);
-      setVariants(newVariants);
+      console.log("Form Data:", formData);
+    } catch (error) {
+      console.error("Error processing form data:", error);
     }
   };
 
-  const onSubmit = (data: CreateProductProps) => {
-    console.log("Hello");
-    const formData =  {
-      ...data,
-      variants: variants,
-    };
-    console.log("Form Data:", formData);
+  const defaultValues = {
+    productCode: "",
+    title: "",
+    subTitle: "",
+    totalQuantity: 0,
+    price: 0,
+    discount: 0,
+    parentageForSeller: 0,
+    mainCategory: "",
+    category: "",
+    subCategory: "",
+    description: "",
+    status: "",
+    activity: "",
+    variantsData: JSON.stringify(variants),
   };
 
   return (
-    <Box className="bg-gray-50 min-h-screen py-8 px-4">
-      <Paper
-        elevation={0}
-        className="max-w-7xl mx-auto rounded-lg overflow-hidden"
-      >
-        <Box className="bg-green-700 p-6">
-          <Typography variant="h4" fontWeight="bold" color="white">
+    <Box>
+      <Paper className="rounded-lg p-4 overflow-hidden">
+        <Box className="bg-green-800 p-6">
+          <Typography variant="h6" fontWeight="bold" color="white">
             Create New Product
           </Typography>
-          <Typography variant="body1" color="white" sx={{ opacity: 0.8 }}>
+          <Typography variant="body2" color="white" sx={{ opacity: 0.8 }}>
             Complete all required fields to create a new product listing
           </Typography>
         </Box>
 
-        <ReusableForm onSubmit={onSubmit}>
-          <Box className="p-6 md:p-8">
+        <ReusableForm onSubmit={onSubmit} defaultValues={defaultValues}>
+          <Box>
             {/* Basic Information Section */}
             <SectionHeader
               icon={<InfoOutlinedIcon />}
@@ -122,7 +97,7 @@ const CreateProduct = () => {
               subtitle="Primary product details"
             />
 
-            <Grid container spacing={3} className="mb-8">
+            <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextInput
                   name="productCode"
@@ -131,7 +106,7 @@ const CreateProduct = () => {
                   placeholder="Enter unique product code"
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 <TextInput
                   name="title"
                   label="Product Title"
@@ -139,7 +114,7 @@ const CreateProduct = () => {
                   placeholder="Enter descriptive product title"
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid size={{ xs: 12, md: 12 }}>
                 <TextInput
                   name="subTitle"
                   label="Product Subtitle"
@@ -156,7 +131,7 @@ const CreateProduct = () => {
               subtitle="Manage product stock and pricing"
             />
 
-            <Grid container spacing={3} className="mb-8">
+            <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 3 }}>
                 <TextInput
                   name="price"
@@ -202,7 +177,7 @@ const CreateProduct = () => {
               subtitle="Specify product categories for better organization"
             />
 
-            <Grid container spacing={3} className="mb-8">
+            <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextInput
                   name="mainCategory"
@@ -216,7 +191,7 @@ const CreateProduct = () => {
                   name="category"
                   label="Category"
                   required
-                  placeholder="e.g. Smartphones"
+                  placeholder="e.g. xsartphones"
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
@@ -236,7 +211,7 @@ const CreateProduct = () => {
               subtitle="Set product visibility and availability"
             />
 
-            <Grid container spacing={3} className="mb-8">
+            <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <SelectInputField
                   name="status"
@@ -267,7 +242,7 @@ const CreateProduct = () => {
               subtitle="Provide detailed information about your product"
             />
 
-            <Grid container spacing={3} className="mb-8">
+            <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 12 }}>
                 <TextInput
                   name="description"
@@ -287,121 +262,16 @@ const CreateProduct = () => {
               subtitle="Add different versions of your product"
             />
 
-            <Box className="mb-8">
-              {variants.map((variant, variantIndex) => (
-                <Card
-                  key={`variant-${variantIndex}`}
-                  variant="outlined"
-                  className="mb-4"
-                  sx={{ borderColor: "rgba(0, 0, 0, 0.1)" }}
-                >
-                  <CardContent>
-                    <Box className="flex justify-between items-center mb-4">
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Chip
-                          label={`Variant ${variantIndex + 1}`}
-                          color="primary"
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Stack>
-                      <Box>
-                        <IconButton
-                          color="error"
-                          onClick={() => removeVariant(variantIndex)}
-                          disabled={variants.length === 1}
-                          size="small"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                        <Button
-                          startIcon={<AddIcon />}
-                          onClick={addVariant}
-                          variant="outlined"
-                          color="primary"
-                          className="mt-4"
-                        >
-                          Add Variant
-                        </Button>
-                      </Box>
-                    </Box>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <VariantsSection
+                  variants={variants}
+                  setVariants={setVariants}
+                />
+              </Grid>
+            </Grid>
 
-                    <Grid container spacing={3}>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <TextInput
-                          name={`variant-${variantIndex}-name`}
-                          label="Variant Type"
-                          placeholder="e.g. Color, Size, Material, etc."
-                          required
-                        />
-                      </Grid>
-
-                      <Grid size={{ xs: 12, md: 8 }}>
-                        {variant.attributes.map((attribute, attributeIndex) => (
-                          <Grid
-                            container
-                            spacing={2}
-                            key={`attribute-${variantIndex}-${attributeIndex}`}
-                            className="flex items-center gap-3 mb-3"
-                          >
-                            <Grid size={{ xs: 12, md: 6 }}>
-                              <TextInput
-                                name={`variant-${variantIndex}-attribute-${attributeIndex}-value`}
-                                label="Option Value"
-                                placeholder="e.g. Red, Small, Cotton, etc."
-                                required
-                              />
-                            </Grid>
-                            <Grid size={{ xs: 12, md: 5 }}>
-                              <TextInput
-                                name={`variant-${variantIndex}-attribute-${attributeIndex}-quantity`}
-                                type="number"
-                                label="Stock"
-                                required
-                                placeholder="0"
-                              />
-                            </Grid>
-                            <Grid
-                              size={{ xs: 12, md: 1 }}
-                              className="flex items-center"
-                            >
-                              {attributeIndex > 0 && (
-                                <IconButton
-                                  color="error"
-                                  onClick={() =>
-                                    removeAttribute(
-                                      variantIndex,
-                                      attributeIndex
-                                    )
-                                  }
-                                  size="small"
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
-                              )}
-                            </Grid>
-                          </Grid>
-                        ))}
-
-                        <Box className="mt-2">
-                          <Button
-                            startIcon={<AddIcon />}
-                            onClick={() => addAttribute(variantIndex)}
-                            variant="outlined"
-                            color="primary"
-                            size="small"
-                          >
-                            Add Option
-                          </Button>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-
-            <Box className="flex">
+            <Box className="flex mt-4">
               <Button
                 type="submit"
                 variant="contained"

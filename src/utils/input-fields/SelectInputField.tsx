@@ -6,6 +6,7 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  type SelectChangeEvent,
 } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -29,44 +30,40 @@ const SelectInputField: React.FC<SelectInputFieldProps> = ({
   onChange,
 }) => {
   const { control } = useFormContext();
-  const labelId = `${name}-label`;
 
   return (
-    <FormControl fullWidth disabled={disabled} error={!!requiredMessage}>
-      <InputLabel id={labelId}>{label}</InputLabel>
-      <Controller
-        name={name}
-        control={control}
-        defaultValue={defaultValue}
-        rules={requiredMessage ? { required: requiredMessage } : {}}
-        render={({ field, fieldState }) => (
-          <>
-            <Select
-              {...field}
-              labelId={labelId}
-              label={label}
-              value={field.value || ""}
-              onChange={(event) => {
-                const selectedValue = event.target.value;
-                field.onChange(selectedValue);
-                onChange?.(selectedValue);
-              }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-            {fieldState.error && (
-              <FormHelperText sx={{ color: "error.main" }}>
-                {fieldState.error.message}
-              </FormHelperText>
-            )}
-          </>
-        )}
-      />
-    </FormControl>
+    <Controller
+      name={name}
+      control={control}
+      defaultValue={defaultValue}
+      rules={requiredMessage ? { required: requiredMessage } : undefined}
+      render={({ field, fieldState }) => (
+        <FormControl fullWidth disabled={disabled} error={!!fieldState.error}>
+          <InputLabel>{label}</InputLabel>
+          <Select
+            {...field}
+            label={label}
+            value={field.value || ""}
+            onChange={(event: SelectChangeEvent) => {
+              const value = event.target.value as string;
+              field.onChange(value);
+              if (onChange) {
+                onChange(value);
+              }
+            }}
+          >
+            {options.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+          {fieldState.error && (
+            <FormHelperText>{fieldState.error.message}</FormHelperText>
+          )}
+        </FormControl>
+      )}
+    />
   );
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   FormControl,
   FormControlLabel,
@@ -18,7 +17,7 @@ type RadioInputProps = {
   name: string;
   label: string;
   options: Option[];
-  required?: boolean;
+  required?: boolean | string;
 };
 
 const RadioInput = ({
@@ -30,26 +29,35 @@ const RadioInput = ({
   const { control } = useFormContext();
 
   return (
-    <FormControl component="fieldset" fullWidth>
+    <FormControl component="fieldset" fullWidth error={!!required}>
       <FormLabel component="legend">{label}</FormLabel>
       <Controller
         name={name}
         control={control}
-        rules={{ required }}
+        rules={
+          required
+            ? {
+                required:
+                  typeof required === "string"
+                    ? required
+                    : "This field is required",
+              }
+            : undefined
+        }
         render={({ field, fieldState }) => (
           <>
             <RadioGroup {...field} row>
-              {options.map((option) => (
+              {options.map(({ value, label }) => (
                 <FormControlLabel
-                  key={option.value}
-                  value={option.value}
+                  key={value}
+                  value={value}
                   control={<Radio />}
-                  label={option.label}
+                  label={label}
                 />
               ))}
             </RadioGroup>
             {fieldState.error && (
-              <FormHelperText error>This field is required</FormHelperText>
+              <FormHelperText>{fieldState.error.message}</FormHelperText>
             )}
           </>
         )}

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useFormContext } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 type DateInputProps = {
   name: string;
@@ -25,19 +24,19 @@ const DateInput = ({
       <Controller
         name={name}
         control={control}
-        rules={{ required }}
+        rules={required ? { required: "This field is required" } : undefined}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <DatePicker
             label={label}
             value={value ? dayjs(value) : null}
-            onChange={(date: Dayjs | null) => {
+            onChange={(date) => {
               onChange(date ? date.toISOString() : null);
             }}
             slotProps={{
               textField: {
                 fullWidth,
                 error: !!error,
-                helperText: error ? "This field is required" : "",
+                helperText: error?.message,
               },
             }}
           />

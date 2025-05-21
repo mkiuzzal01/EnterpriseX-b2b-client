@@ -20,7 +20,7 @@ const Index = () => {
           <Sidebar />
         </aside>
 
-        <div className="flex-1 bg-[#F0F4F8] flex flex-col h-[calc(100vh-70px)]">
+        <div className="flex-1 bg-gray-400 flex flex-col h-[calc(100vh-70px)]">
           <main className="flex-1 overflow-y-auto p-4">
             <Outlet />
           </main>

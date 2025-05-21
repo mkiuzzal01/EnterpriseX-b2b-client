@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -23,19 +22,16 @@ const TextInput = ({
   placeholder,
   type = "text",
   variant = "outlined",
-  required = false,
+  required,
   defaultValue = "",
   fullWidth = true,
-  multiline = false,
+  multiline,
   row = 1,
 }: TextInputProps) => {
   const { control } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === "password";
-  const isMultiline = type === "text" && multiline;
-
-  const toggleVisibility = () => setShowPassword((prev) => !prev);
 
   return (
     <Controller
@@ -50,24 +46,23 @@ const TextInput = ({
           placeholder={placeholder}
           variant={variant}
           fullWidth={fullWidth}
-          margin="normal"
           error={!!fieldState.error}
           helperText={fieldState.error ? `${label} is required` : ""}
           type={isPassword ? (showPassword ? "text" : "password") : type}
-          multiline={isMultiline}
-          rows={isMultiline ? row : undefined}
+          multiline={multiline}
+          rows={multiline ? row : undefined}
           InputProps={{
-            endAdornment: isPassword ? (
+            endAdornment: isPassword && (
               <InputAdornment position="end">
-                <IconButton onClick={toggleVisibility} edge="end">
+                <IconButton
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
-            ) : undefined,
-            inputProps: {
-              inputMode: type === "number" ? "numeric" : undefined,
-              pattern: type === "number" ? "[0-9]*" : undefined,
-            },
+            ),
+            inputProps: type === "number" ? { min: 0 } : undefined,
           }}
         />
       )}
