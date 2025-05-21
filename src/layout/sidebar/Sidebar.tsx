@@ -10,7 +10,11 @@ import React from "react";
 import { NavLinks } from "./NavLinks";
 import MenuItems from "../../components/utils/MenuItems";
 
-const Sidebar = () => {
+type SidebarProps = {
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Sidebar = ({ setSidebarOpen }: SidebarProps) => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
 
   const handleChange =
@@ -46,7 +50,11 @@ const Sidebar = () => {
           </AccordionSummary>
 
           {item.children.map((child, idx) => (
-            <AccordionDetails key={idx} sx={{ pl: 4 }}>
+            <AccordionDetails
+              onClick={(prev) => setSidebarOpen(!prev)}
+              key={idx}
+              sx={{ pl: 4 }}
+            >
               <MenuItems
                 route={child.route}
                 icon={child.icon}

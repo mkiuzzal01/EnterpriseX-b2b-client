@@ -1,17 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Divider,
-  Paper,
-  Grid,
-} from "@mui/material";
+import { Box, Typography, Button, Divider, Paper, Grid } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../../utils/input-fields/SelectInputField";
 import TextInput from "../../../utils/input-fields/TextInput";
 import DateInput from "../../../utils/input-fields/DateInput";
+import SectionHeader from "../../../utils/section/SectionHeader";
+import { GrAction } from "react-icons/gr";
+import { FaUser } from "react-icons/fa6";
+import { MdAccountBalance, MdSecurity } from "react-icons/md";
 
 type RegistrationProps = {
   role: string;
@@ -51,17 +48,25 @@ const CreateUser = () => {
   };
 
   return (
-    <Box sx={{ py: 4, px: { xs: 2, md: 4 } }}>
+    <Box>
       <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 2 }}>
         <ReusableForm onSubmit={onSubmit}>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
-            User Registration
-          </Typography>
-          <Typography variant="body1" color="textSecondary" gutterBottom mb={3}>
-            Please fill in authentic details below.
-          </Typography>
+          <Box className="bg-green-800 p-6">
+            <Typography variant="h6" fontWeight="bold" color="white">
+              User Registration
+            </Typography>
+            <Typography variant="body2" color="white" sx={{ opacity: 0.8 }}>
+              Please fill in authentic details below.
+            </Typography>
+          </Box>
 
-          <Box mb={3}>
+          <SectionHeader
+            icon={<GrAction />}
+            title="Role Information"
+            subtitle="Choose the user role"
+          />
+
+          <Box>
             <SelectInputField
               name="role"
               label="Role"
@@ -71,39 +76,40 @@ const CreateUser = () => {
             />
           </Box>
 
-          <Typography variant="h6" gutterBottom mt={2}>
-            Personal Information
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
+          <SectionHeader
+            icon={<FaUser />}
+            title="Personal Information"
+            subtitle="Enter basic personal details"
+          />
 
           <Grid container spacing={3}>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="name.firstName" label="First Name" required />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="name.middleName" label="Middle Name" />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="name.lastName" label="Last Name" required />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="email" label="Email" type="email" required />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="phone" label="Phone" type="tel" required />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextInput name="nid" label="NID" required />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <DateInput name="dateOfBirth" label="Date of Birth" required />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <DateInput name="dateOfJoining" label="Joining Date" required />
             </Grid>
-            <Grid  size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <SelectInputField
                 name="gender"
                 label="Gender"
@@ -112,14 +118,15 @@ const CreateUser = () => {
               />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 12 }}>
-              <Typography variant="h6" gutterBottom>
-                Address Information
-              </Typography>
-              <Divider/>
+            <Grid size={{ xs: 12, md: 12 }}>
+              <SectionHeader
+                icon={<InfoOutlinedIcon />}
+                title="Address Information"
+                subtitle="Enter present and permanent address"
+              />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextInput
                 name="address.presentAddress"
                 label="Present Address"
@@ -128,7 +135,7 @@ const CreateUser = () => {
                 row={2}
               />
             </Grid>
-            <Grid  size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <TextInput
                 name="address.permanentAddress"
                 label="Permanent Address"
@@ -140,14 +147,15 @@ const CreateUser = () => {
 
             {isSeller && (
               <>
-                <Grid  size={{ xs: 12, md: 12 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Banking Information
-                  </Typography>
-                  <Divider />
+                <Grid size={{ xs: 12, md: 12 }}>
+                  <SectionHeader
+                    icon={<MdAccountBalance />}
+                    title="Bank Information"
+                    subtitle="Only for sellers"
+                  />
                 </Grid>
 
-                <Grid  size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <SelectInputField
                     name="bankAccountInfo.paymentMethod"
                     label="Payment Method"
@@ -155,7 +163,7 @@ const CreateUser = () => {
                     requiredMessage="Payment method is required"
                   />
                 </Grid>
-                <Grid  size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <SelectInputField
                     name="bankAccountInfo.bankName"
                     label="Bank Name"
@@ -163,7 +171,7 @@ const CreateUser = () => {
                     requiredMessage="Bank name is required"
                   />
                 </Grid>
-                <Grid  size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <TextInput
                     name="bankAccountInfo.accountNumber"
                     label="Account Number"
@@ -173,14 +181,15 @@ const CreateUser = () => {
               </>
             )}
 
-            <Grid  size={{ xs: 12, md: 12 }}>
-              <Typography variant="h6" gutterBottom >
-                Security
-              </Typography>
-              <Divider />
+            <Grid size={{ xs: 12, md: 12 }}>
+              <SectionHeader
+                icon={<MdSecurity />}
+                title="Security"
+                subtitle="Create new password"
+              />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 12 }}>
+            <Grid size={{ xs: 12, md: 12 }}>
               <TextInput
                 name="password"
                 label="Password"
@@ -191,7 +200,7 @@ const CreateUser = () => {
               />
             </Grid>
 
-            <Grid  size={{ xs: 12, md: 3 }}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <Button
                 type="submit"
                 variant="contained"

@@ -8,6 +8,12 @@ import NotFound from "../components/pages/NotFound";
 import CreateUser from "../components/pages/users/CreateUser";
 import AllUsers from "../components/pages/users/AllUsers";
 import CreateProduct from "../components/pages/product/createProduct";
+import CreateOrder from "../components/pages/order/createOrder";
+import AllProduct from "../components/pages/product/allProduct";
+import CreateVariant from "../components/pages/variant/CreateVariant";
+import AllVariant from "../components/pages/variant/AllVariant";
+import AllCategory from "../components/pages/category/AllCategory";
+import CreateCategory from "../components/pages/category/CreateCategory";
 
 export const route = createBrowserRouter([
   {
@@ -38,6 +44,30 @@ export const route = createBrowserRouter([
       {
         path: "/create-product",
         element: <CreateProduct />,
+      },
+      {
+        path: "/all-product",
+        element: <AllProduct />,
+      },
+      {
+        path: "/create-variant",
+        element: <CreateVariant />,
+      },
+      {
+        path: "/all-variant",
+        element: <AllVariant />,
+      },
+      {
+        path: "/create-category",
+        element: <CreateCategory />,
+      },
+      {
+        path: "/all-category",
+        element: <AllCategory />,
+      },
+      {
+        path: "/create-order",
+        element: <CreateOrder />,
       },
     ],
   },

@@ -5,6 +5,7 @@ import {
   FaPerson,
   FaPlus,
   FaProductHunt,
+  FaStore,
   FaUserGroup,
 } from "react-icons/fa6";
 import { FaUsersCog } from "react-icons/fa";
@@ -50,6 +51,17 @@ export const NavLinks = [
     ],
   },
   {
+    name: "Stroke ",
+    icon: <FaStore />,
+    children: [
+      {
+        name: "All Product",
+        icon: <FaProductHunt />,
+        route: "/all-product",
+      },
+    ],
+  },
+  {
     name: "Product",
     icon: <FaProductHunt />,
     children: [
@@ -61,7 +73,7 @@ export const NavLinks = [
       {
         name: "All products",
         icon: <FaList />,
-        route: "/all-users",
+        route: "/all-product",
       },
       {
         name: "Add variant",
