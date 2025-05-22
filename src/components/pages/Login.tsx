@@ -1,7 +1,6 @@
 import TextInput from "../../utils/input-fields/TextInput";
 import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
-import type { SubmitHandler } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import ReusableForm from "../../shared/ReusableFrom";
 
 type FormValues = {
@@ -10,11 +9,10 @@ type FormValues = {
 };
 
 const Login = () => {
-  
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const onSubmit = (data: FormValues) => {
     if (data.email === "demo@gmail.com" && data.password === "12345") {
-      alert("Login successful!");
+      navigate("/");
     } else {
       alert("Invalid credentials");
     }
@@ -66,14 +64,6 @@ const Login = () => {
           >
             Login
           </Button>
-          <div>
-            <p className="text-sm mt-4">
-              Don't have an account?{" "}
-              <Link to={"/register"} className="text-blue-500">
-                Register
-              </Link>
-            </p>
-          </div>
         </ReusableForm>
       </div>
     </div>
