@@ -14,6 +14,11 @@ import CreateVariant from "../components/pages/variant/CreateVariant";
 import AllVariant from "../components/pages/variant/AllVariant";
 import AllCategory from "../components/pages/category/AllCategory";
 import CreateCategory from "../components/pages/category/CreateCategory";
+import CreateNotification from "../components/pages/notification/CreateNotification";
+import CreateRequisition from "../components/pages/requisition/CreateRequisition";
+import Requisition from "../components/pages/requisition/Requisition";
+import CreateFeedback from "../components/pages/feedback/CreateFeedback";
+import AllFeedback from "../components/pages/feedback/AllFeedback";
 
 export const route = createBrowserRouter([
   {
@@ -68,6 +73,30 @@ export const route = createBrowserRouter([
       {
         path: "/create-order",
         element: <CreateOrder />,
+      },
+      {
+        path: "/create-notice",
+        element: <CreateNotification />,
+      },
+      {
+        path: "/all-notice",
+        element: <Notification />,
+      },
+      {
+        path: "/create-requisition",
+        element: <CreateRequisition />,
+      },
+      {
+        path: "/all-requisition",
+        element: <Requisition />,
+      },
+      {
+        path: "/create-feedback",
+        element: <CreateFeedback />,
+      },
+      {
+        path: "/all-feedback",
+        element: <AllFeedback />,
       },
     ],
   },

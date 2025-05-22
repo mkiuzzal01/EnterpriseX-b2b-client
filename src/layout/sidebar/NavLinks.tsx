@@ -141,7 +141,7 @@ export const NavLinks = [
       {
         name: "Add requisition",
         icon: <FaPlus />,
-        route: "/add-requisition",
+        route: "/create-requisition",
       },
       {
         name: "All requisition",
@@ -157,7 +157,7 @@ export const NavLinks = [
       {
         name: "Add Feedback",
         icon: <FaPlus />,
-        route: "/add-feedback",
+        route: "/create-feedback",
       },
       {
         name: "All feedback",

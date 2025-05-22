@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography, Paper } from "@mui/material";
+import { Box, Button, Grid, Paper } from "@mui/material";
 import TextInput from "../../../utils/input-fields/TextInput";
 import SelectInputField from "../../../utils/input-fields/SelectInputField";
 import { useState } from "react";
@@ -12,6 +12,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import SectionHeader from "../../../utils/section/SectionHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
 import VariantsSection from "../../utils/VariantsSection";
+import FormHeader from "../../utils/FormHeader";
 
 type Attribute = {
   value: string;
@@ -79,14 +80,10 @@ const CreateProduct = () => {
   return (
     <Box>
       <Paper className="rounded-lg p-4 overflow-hidden">
-        <Box className="bg-green-800 p-6">
-          <Typography variant="h6" fontWeight="bold" color="white">
-            Create New Product
-          </Typography>
-          <Typography variant="body2" color="white" sx={{ opacity: 0.8 }}>
-            Complete all required fields to create a new product listing
-          </Typography>
-        </Box>
+        <FormHeader
+          title="Create New Product"
+          subTitle="Complete all required fields to create a new product listing"
+        />
 
         <ReusableForm onSubmit={onSubmit} defaultValues={defaultValues}>
           <Box>

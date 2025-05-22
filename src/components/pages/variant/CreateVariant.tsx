@@ -1,15 +1,9 @@
-import {
-  Box,
-  Grid,
-  IconButton,
-  Paper,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Grid, IconButton, Paper, Button } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import TextInput from "../../../utils/input-fields/TextInput";
 import ReusableForm from "../../../shared/ReusableFrom";
 import { useState } from "react";
+import FormHeader from "../../utils/FormHeader";
 
 type AttributeValue = {
   value: string;
@@ -41,18 +35,14 @@ const CreateVariant = () => {
   return (
     <Box>
       <Paper elevation={2} sx={{ p: 4 }}>
-        <Box className="bg-green-800 p-6 mb-3">
-          <Typography variant="h6" fontWeight="bold" color="white">
-            Create a New Variant
-          </Typography>
-          <Typography variant="body2" color="white" sx={{ opacity: 0.8 }}>
-            Define the type of variant such as color, size, material, etc.
-          </Typography>
-        </Box>
+        <FormHeader
+          title="Create a New Variant"
+          subTitle="Define the type of variant such as color, size, material, etc."
+        />
 
         <ReusableForm onSubmit={onSubmit}>
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 12 }}>
+            <Grid size={{ xs: 12, md: 12 }} mt={4}>
               <TextInput
                 name="name"
                 label="Variant Name"

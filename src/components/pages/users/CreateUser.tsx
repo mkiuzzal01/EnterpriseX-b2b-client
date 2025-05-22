@@ -1,6 +1,6 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Divider, Paper, Grid } from "@mui/material";
+import { Box,Button,Paper, Grid } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../../utils/input-fields/SelectInputField";
 import TextInput from "../../../utils/input-fields/TextInput";
@@ -9,6 +9,7 @@ import SectionHeader from "../../../utils/section/SectionHeader";
 import { GrAction } from "react-icons/gr";
 import { FaUser } from "react-icons/fa6";
 import { MdAccountBalance, MdSecurity } from "react-icons/md";
+import FormHeader from "../../utils/FormHeader";
 
 type RegistrationProps = {
   role: string;
@@ -51,14 +52,10 @@ const CreateUser = () => {
     <Box>
       <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 2 }}>
         <ReusableForm onSubmit={onSubmit}>
-          <Box className="bg-green-800 p-6">
-            <Typography variant="h6" fontWeight="bold" color="white">
-              User Registration
-            </Typography>
-            <Typography variant="body2" color="white" sx={{ opacity: 0.8 }}>
-              Please fill in authentic details below.
-            </Typography>
-          </Box>
+          <FormHeader
+            title="User Registration"
+            subTitle="Please fill in authentic details below."
+          />
 
           <SectionHeader
             icon={<GrAction />}
