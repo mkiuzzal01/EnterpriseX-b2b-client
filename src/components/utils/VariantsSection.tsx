@@ -87,7 +87,9 @@ const VariantsSection = ({ variants, setVariants }: VariantsSectionProps) => {
                 />
               </Stack>
               <Box>
-                <IconButton
+                {
+                  variants.length > 1 &&
+                  <IconButton
                   color="error"
                   onClick={() => removeVariant(variantIndex)}
                   disabled={variants.length === 1}
@@ -95,6 +97,7 @@ const VariantsSection = ({ variants, setVariants }: VariantsSectionProps) => {
                 >
                   <Delete />
                 </IconButton>
+                }
                 <Button
                   startIcon={<Add />}
                   onClick={addVariant}

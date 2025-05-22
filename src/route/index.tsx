@@ -7,9 +7,6 @@ import Login from "../components/pages/Login";
 import NotFound from "../components/pages/NotFound";
 import CreateUser from "../components/pages/users/CreateUser";
 import AllUsers from "../components/pages/users/AllUsers";
-import CreateProduct from "../components/pages/product/createProduct";
-import CreateOrder from "../components/pages/order/createOrder";
-import AllProduct from "../components/pages/product/allProduct";
 import CreateVariant from "../components/pages/variant/CreateVariant";
 import AllVariant from "../components/pages/variant/AllVariant";
 import AllCategory from "../components/pages/category/AllCategory";
@@ -19,6 +16,11 @@ import CreateRequisition from "../components/pages/requisition/CreateRequisition
 import Requisition from "../components/pages/requisition/Requisition";
 import CreateFeedback from "../components/pages/feedback/CreateFeedback";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
+import AllOrder from "../components/pages/order/AllOrder";
+import AllSellerPay from "../components/pages/seller-pay/AllSellerPay";
+import CreateProduct from "../components/pages/product/CreateProduct";
+import AllProduct from "../components/pages/product/AllProduct";
+import CreateOrder from "../components/pages/order/CreateOrder";
 
 export const route = createBrowserRouter([
   {
@@ -52,7 +54,7 @@ export const route = createBrowserRouter([
       },
       {
         path: "/all-product",
-        element: <AllProduct />,
+        element: <AllProduct/>,
       },
       {
         path: "/create-variant",
@@ -73,6 +75,14 @@ export const route = createBrowserRouter([
       {
         path: "/create-order",
         element: <CreateOrder />,
+      },
+      {
+        path: "/all-order",
+        element: <AllOrder />,
+      },
+      {
+        path: "/seller-pay",
+        element: <AllSellerPay />,
       },
       {
         path: "/create-notice",
