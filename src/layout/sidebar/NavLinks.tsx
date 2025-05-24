@@ -171,14 +171,14 @@ export const NavLinks = [
     icon: <GrGallery />,
     children: [
       {
-        name: "All Photo",
+        name: "All Image",
         icon: <RiGalleryFill />,
-        route: "/All-Photo",
+        route: "/images",
       },
       {
-        name: "All feedback",
+        name: "All Folder",
         icon: <FaFolderOpen />,
-        route: "/all-folder",
+        route: "/folders",
       },
     ],
   },

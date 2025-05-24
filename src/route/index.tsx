@@ -21,6 +21,8 @@ import AllSellerPay from "../components/pages/seller-pay/AllSellerPay";
 import CreateProduct from "../components/pages/product/CreateProduct";
 import AllProduct from "../components/pages/product/AllProduct";
 import CreateOrder from "../components/pages/order/CreateOrder";
+import Images from "../components/gallery/Images";
+import Folder from "../components/gallery/folder";
 
 export const route = createBrowserRouter([
   {
@@ -54,7 +56,7 @@ export const route = createBrowserRouter([
       },
       {
         path: "/all-product",
-        element: <AllProduct/>,
+        element: <AllProduct />,
       },
       {
         path: "/create-variant",
@@ -107,6 +109,14 @@ export const route = createBrowserRouter([
       {
         path: "/all-feedback",
         element: <AllFeedback />,
+      },
+      {
+        path: "/images",
+        element: <Images />,
+      },
+      {
+        path: "/folders",
+        element: <Folder />,
       },
     ],
   },
