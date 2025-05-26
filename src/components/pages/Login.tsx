@@ -1,7 +1,11 @@
-import TextInput from "../../utils/input-fields/TextInput";
+import TextInput from "../utils/input-fields/TextInput";
 import { Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import ReusableForm from "../../shared/ReusableFrom";
+import { useAppDispatch } from "../../redux/hooks";
+import { useLoginMutation } from "../../redux/features/auth/authApi";
+import { verifyToken } from "../../utils/verifyToken";
+import { setUser, type TUser } from "../../redux/features/auth/authSlice";
 
 type FormValues = {
   email: string;
@@ -10,11 +14,19 @@ type FormValues = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const onSubmit = (data: FormValues) => {
-    if (data.email === "demo@gmail.com" && data.password === "12345") {
+  const dispatch = useAppDispatch();
+  const [login, { isLoading }] = useLoginMutation();
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const res = await login(data).unwrap();
+
+      const user = verifyToken(res.data.accessToken) as TUser;
+      console.log(user);
+      dispatch(setUser({ user: user, token: res.data.accessToken }));
       navigate("/");
-    } else {
-      alert("Invalid credentials");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -27,7 +39,10 @@ const Login = () => {
       <div className="w-80 bg-white p-6 rounded shadow">
         <ReusableForm
           onSubmit={onSubmit}
-          defaultValues={{ email: "demo@gmail.com", password: "12345" }}
+          defaultValues={{
+            email: "superadmin123@gmail.com",
+            password: "s12345",
+          }}
         >
           <TextInput
             name="email"

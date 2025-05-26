@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Paper } from "@mui/material";
-import TextInput from "../../../utils/input-fields/TextInput";
-import SelectInputField from "../../../utils/input-fields/SelectInputField";
+import TextInput from "../../utils/input-fields/TextInput";
+import SelectInputField from "../../utils/input-fields/SelectInputField";
 import { useState } from "react";
 import CategoryIcon from "@mui/icons-material/Category";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -9,7 +9,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StyleIcon from "@mui/icons-material/Style";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SaveIcon from "@mui/icons-material/Save";
-import SectionHeader from "../../../utils/section/SectionHeader";
+import SectionHeader from "../../utils/section/SectionHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
 import VariantsSection from "../../utils/VariantsSection";
 import FormHeader from "../../utils/FormHeader";

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import TextInput from "../../utils/input-fields/TextInput";
+import TextInput from "./input-fields/TextInput";
 
 type Attribute = {
   value: string;

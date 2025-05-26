@@ -1,9 +1,9 @@
 import { Box, Button, Grid, Paper } from "@mui/material";
 import FormHeader from "../../utils/FormHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
-import SelectInputField from "../../../utils/input-fields/SelectInputField";
-import TextInput from "../../../utils/input-fields/TextInput";
-import SectionHeader from "../../../utils/section/SectionHeader";
+import SelectInputField from "../../utils/input-fields/SelectInputField";
+import TextInput from "../../utils/input-fields/TextInput";
+import SectionHeader from "../../utils/section/SectionHeader";
 import { BiSolidCategory } from "react-icons/bi";
 
 type SubCategoryProps = {

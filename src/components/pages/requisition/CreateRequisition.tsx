@@ -1,8 +1,8 @@
 import { Box, Button, Grid, Paper } from "@mui/material";
 import FormHeader from "../../utils/FormHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
-import TextInput from "../../../utils/input-fields/TextInput";
-import SelectInputField from "../../../utils/input-fields/SelectInputField";
+import TextInput from "../../utils/input-fields/TextInput";
+import SelectInputField from "../../utils/input-fields/SelectInputField";
 
 type CreateRequisitionProps = {
   title: string;

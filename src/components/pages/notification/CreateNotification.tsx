@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Paper } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import FormHeader from "../../utils/FormHeader";
-import TextInput from "../../../utils/input-fields/TextInput";
+import TextInput from "../../utils/input-fields/TextInput";
 type NotificationProps = {
   title: string;
   subTitle: string;
