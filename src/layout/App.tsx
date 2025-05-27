@@ -5,6 +5,7 @@ import { PageContainer } from "@toolpad/core/PageContainer";
 import { navigation } from "./navigation";
 import { IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import { SearchIcon } from "lucide-react";
+import { useMemo } from "react";
 import User from "./components/User";
 
 const branding = {
@@ -12,45 +13,39 @@ const branding = {
   homeUrl: "/overview",
 };
 
-
 const App = () => {
-
-  const ToolbarActionsSearch = () => {
-    return (
-      <Stack direction="row">
+  const ToolbarActionsSearch = useMemo(
+    () => () => (
+      <Stack direction="row" alignItems="center" spacing={1}>
         <Tooltip title="Search" enterDelay={1000}>
-          <div>
-            <IconButton
-              type="button"
-              aria-label="search"
-              sx={{
-                display: { xs: "inline", md: "none" },
-              }}
-            >
-              <SearchIcon />
-            </IconButton>
-          </div>
+          <IconButton
+            type="button"
+            aria-label="Open search"
+            sx={{ display: { xs: "inline", md: "none" } }}
+          >
+            <SearchIcon />
+          </IconButton>
         </Tooltip>
+
         <TextField
           label="Search"
           variant="outlined"
           size="small"
-          slotProps={{
-            input: {
-              endAdornment: (
-                <IconButton type="button" aria-label="search" size="small">
-                  <SearchIcon />
-                </IconButton>
-              ),
-              sx: { pr: 0.5 },
-            },
+          sx={{ display: { xs: "none", md: "inline-flex" }, mr: 1 }}
+          InputProps={{
+            endAdornment: (
+              <IconButton type="button" aria-label="Search" size="small">
+                <SearchIcon />
+              </IconButton>
+            ),
           }}
-          sx={{ display: { xs: "none", md: "inline-block" }, mr: 1 }}
         />
+
         <ThemeSwitcher />
       </Stack>
-    );
-  };
+    ),
+    []
+  );
 
   return (
     <ReactRouterAppProvider navigation={navigation} branding={branding}>
