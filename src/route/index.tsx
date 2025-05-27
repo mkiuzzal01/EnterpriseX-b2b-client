@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Overview from "../components/pages/overview/Overview";
 import Notification from "../components/pages/notification/Notification";
+import CreateNotification from "../components/pages/notification/CreateNotification";
 import Profile from "../components/pages/profile/Profile";
 import CreateUser from "../components/pages/users/CreateUser";
 import AllUsers from "../components/pages/users/AllUsers";
@@ -13,44 +14,43 @@ import AllCategory from "../components/pages/category/AllCategory";
 import CreateOrder from "../components/pages/order/CreateOrder";
 import AllOrder from "../components/pages/order/AllOrder";
 import AllSellerPay from "../components/pages/seller-pay/AllSellerPay";
-import CreateNotification from "../components/pages/notification/CreateNotification";
 import CreateRequisition from "../components/pages/requisition/CreateRequisition";
 import Requisition from "../components/pages/requisition/Requisition";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
 import CreateFeedback from "../components/pages/feedback/CreateFeedback";
-import { Folder, Images } from "lucide-react";
-import NotFound from "../components/pages/NotFound";
+import Images from "../components/gallery/Images";
+// import NotFound from "../components/pages/NotFound";
 import Login from "../components/pages/Login";
-import Index from "../layout/Index";
+import App from "../layout/App";
+import Folder from "../components/gallery/folder";
+import NotFound from "../components/pages/NotFound";
 
 export const route = createBrowserRouter([
   {
-    path: "/",
-    element: <Index />,
+    Component: App,
     errorElement: <NotFound />,
     children: [
-      { index: true, element: <Overview /> },
-      { path: "notifications", element: <Notification /> },
-      { path: "profile", element: <Profile /> },
-      { path: "create-user", element: <CreateUser /> },
-      { path: "all-users", element: <AllUsers /> },
-      { path: "create-product", element: <CreateProduct /> },
-      { path: "all-product", element: <AllProduct /> },
-      { path: "create-variant", element: <CreateVariant /> },
-      { path: "all-variant", element: <AllVariant /> },
-      { path: "create-category", element: <CreateCategory /> },
-      { path: "all-category", element: <AllCategory /> },
-      { path: "create-order", element: <CreateOrder /> },
-      { path: "all-order", element: <AllOrder /> },
-      { path: "seller-pay", element: <AllSellerPay /> },
-      { path: "create-notice", element: <CreateNotification /> },
-      { path: "all-notice", element: <Notification /> },
-      { path: "create-requisition", element: <CreateRequisition /> },
-      { path: "all-requisition", element: <Requisition /> },
-      { path: "create-feedback", element: <CreateFeedback /> },
-      { path: "all-feedback", element: <AllFeedback /> },
-      { path: "images", element: <Images /> },
-      { path: "folders", element: <Folder /> },
+      { path: "/overview", Component: Overview },
+      { path: "/profile", Component: Profile },
+      { path: "create-user", Component: CreateUser },
+      { path: "all-users", Component: AllUsers },
+      { path: "create-product", Component: CreateProduct },
+      { path: "all-product", Component: AllProduct },
+      { path: "create-variant", Component: CreateVariant },
+      { path: "all-variant", Component: AllVariant },
+      { path: "create-category", Component: CreateCategory },
+      { path: "all-category", Component: AllCategory },
+      { path: "create-order", Component: CreateOrder },
+      { path: "all-order", Component: AllOrder },
+      { path: "seller-pay", Component: AllSellerPay },
+      { path: "create-notice", Component: CreateNotification },
+      { path: "all-notice", Component: Notification },
+      { path: "create-requisition", Component: CreateRequisition },
+      { path: "all-requisition", Component: Requisition },
+      { path: "create-feedback", Component: CreateFeedback },
+      { path: "all-feedback", Component: AllFeedback },
+      { path: "images", Component: Images },
+      { path: "folders", Component: Folder },
     ],
   },
   { path: "/login", element: <Login /> },

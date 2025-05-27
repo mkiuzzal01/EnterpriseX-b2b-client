@@ -24,7 +24,7 @@ const Login = () => {
       const user = verifyToken(res.data.accessToken) as TUser;
       console.log(user);
       dispatch(setUser({ user: user, token: res.data.accessToken }));
-      navigate("/");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.log(error);
     }

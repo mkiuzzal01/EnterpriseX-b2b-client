@@ -17,9 +17,10 @@ export const navigation: Navigation = [
   {
     title: "overview",
     icon: <FaArrowTrendUp />,
-    children: [{ segment: "dashboard", icon: <FaArrowTrendUp /> }],
+    children: [
+      { segment: "overview", icon: <FaArrowTrendUp /> },
+    ],
   },
-
   {
     title: "profile",
     icon: <FaPerson />,
@@ -55,11 +56,11 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "notices",
+    title: "notifications",
     icon: <IoIosNotifications />,
     children: [
       { segment: "create-notice", icon: <FaPlus /> },
-      { segment: "notifications", icon: <IoIosNotifications /> },
+      { segment: "all-notice", icon: <IoIosNotifications /> },
     ],
   },
   {
