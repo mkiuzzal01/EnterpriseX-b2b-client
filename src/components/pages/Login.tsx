@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../redux/hooks";
 import { useLoginMutation } from "../../redux/features/auth/authApi";
 import { verifyToken } from "../../utils/verifyToken";
 import { setUser, type TUser } from "../../redux/features/auth/authSlice";
+import { useToast } from "../utils/tost-alert/ToastProvider";
 
 type FormValues = {
   email: string;
@@ -15,18 +16,23 @@ type FormValues = {
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [login, { isLoading }] = useLoginMutation();
+  const [login] = useLoginMutation();
+  const { showToast } = useToast();
 
   const onSubmit = async (data: FormValues) => {
     try {
       const res = await login(data).unwrap();
       const user = verifyToken(res.data.accessToken) as TUser;
-
-      console.log(user);
-
       dispatch(setUser({ user: user, token: res.data.accessToken }));
       navigate("/overview", { replace: true });
-      
+      showToast({
+        message: "Login successfully",
+        duration: 3000,
+        position: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
     } catch (error) {
       console.log(error);
     }

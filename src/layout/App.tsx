@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import User from "./components/User";
 import { navigation } from "./Navigation";
 import ProtectedRoute from "../route/protectedRoute";
+// import { useAppDispatch } from "../redux/hooks";
 
 const branding = {
   title: "EnterpriseX",
@@ -15,6 +16,7 @@ const branding = {
 };
 
 const App = () => {
+  // const dispatch = useAppDispatch();
   const ToolbarActionsSearch = useMemo(
     () => () => (
       <Stack direction="row" alignItems="center" spacing={1}>
@@ -49,20 +51,20 @@ const App = () => {
   );
 
   return (
-    <ProtectedRoute>
-      <ReactRouterAppProvider navigation={navigation} branding={branding}>
-        <DashboardLayout
-          slots={{
-            toolbarActions: ToolbarActionsSearch,
-            toolbarAccount: User,
-          }}
-        >
-          <PageContainer breadcrumbs={[]} title="">
-            <Outlet />
-          </PageContainer>
-        </DashboardLayout>
-      </ReactRouterAppProvider>
-    </ProtectedRoute>
+      <ProtectedRoute>
+        <ReactRouterAppProvider navigation={navigation} branding={branding}>
+          <DashboardLayout
+            slots={{
+              toolbarActions: ToolbarActionsSearch,
+              toolbarAccount: User,
+            }}
+          >
+            <PageContainer breadcrumbs={[]} title="">
+              <Outlet />
+            </PageContainer>
+          </DashboardLayout>
+        </ReactRouterAppProvider>
+      </ProtectedRoute>
   );
 };
 
