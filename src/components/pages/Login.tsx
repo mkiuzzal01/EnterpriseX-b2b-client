@@ -20,11 +20,13 @@ const Login = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       const res = await login(data).unwrap();
-
       const user = verifyToken(res.data.accessToken) as TUser;
+
       console.log(user);
+
       dispatch(setUser({ user: user, token: res.data.accessToken }));
-      navigate("/dashboard", { replace: true });
+      navigate("/overview", { replace: true });
+      
     } catch (error) {
       console.log(error);
     }

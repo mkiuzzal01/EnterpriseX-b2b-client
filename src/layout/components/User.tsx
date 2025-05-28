@@ -88,7 +88,7 @@ const User: React.FC = () => {
           </ListItemIcon>
           Profile
         </MenuItem>
-        <MenuItem onClick={() => handleNavigate("/login")}>
+        <MenuItem onClick={() => handleNavigate("/")}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

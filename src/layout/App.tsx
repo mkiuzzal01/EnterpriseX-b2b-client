@@ -2,11 +2,12 @@ import { Outlet } from "react-router-dom";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import { navigation } from "./navigation";
 import { IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import { useMemo } from "react";
 import User from "./components/User";
+import { navigation } from "./Navigation";
+import ProtectedRoute from "../route/protectedRoute";
 
 const branding = {
   title: "EnterpriseX",
@@ -48,18 +49,20 @@ const App = () => {
   );
 
   return (
-    <ReactRouterAppProvider navigation={navigation} branding={branding}>
-      <DashboardLayout
-        slots={{
-          toolbarActions: ToolbarActionsSearch,
-          toolbarAccount: User,
-        }}
-      >
-        <PageContainer breadcrumbs={[]} title="">
-          <Outlet />
-        </PageContainer>
-      </DashboardLayout>
-    </ReactRouterAppProvider>
+    <ProtectedRoute>
+      <ReactRouterAppProvider navigation={navigation} branding={branding}>
+        <DashboardLayout
+          slots={{
+            toolbarActions: ToolbarActionsSearch,
+            toolbarAccount: User,
+          }}
+        >
+          <PageContainer breadcrumbs={[]} title="">
+            <Outlet />
+          </PageContainer>
+        </DashboardLayout>
+      </ReactRouterAppProvider>
+    </ProtectedRoute>
   );
 };
 

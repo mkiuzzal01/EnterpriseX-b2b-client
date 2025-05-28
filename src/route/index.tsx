@@ -19,7 +19,6 @@ import Requisition from "../components/pages/requisition/Requisition";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
 import CreateFeedback from "../components/pages/feedback/CreateFeedback";
 import Images from "../components/gallery/Images";
-// import NotFound from "../components/pages/NotFound";
 import Login from "../components/pages/Login";
 import App from "../layout/App";
 import Folder from "../components/gallery/folder";
@@ -53,5 +52,5 @@ export const route = createBrowserRouter([
       { path: "folders", Component: Folder },
     ],
   },
-  { path: "/login", element: <Login /> },
+  { path: "/", element: <Login /> },
 ]);
