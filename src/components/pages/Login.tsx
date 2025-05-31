@@ -25,19 +25,28 @@ const Login = () => {
       const user = verifyToken(res.data.accessToken) as TUser;
       dispatch(setUser({ user: user, token: res.data.accessToken }));
       navigate("/overview", { replace: true });
+
       showToast({
-        message: "Login successfully",
-        duration: 3000,
+        message: "Login successful!",
+        type: "success",
+        duration: 2000,
         position: {
           vertical: "top",
           horizontal: "right",
         },
       });
-    } catch (error) {
-      console.log(error);
+    } catch {
+      showToast({
+        message: "Login failed. Please check your credentials.",
+        type: "error",
+        duration: 2000,
+        position: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
     }
   };
-
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">

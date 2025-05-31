@@ -1,11 +1,18 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+  type FC,
+} from "react";
 import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import MuiAlert from "@mui/material/Alert";
+import type { AlertColor } from "@mui/material/Alert";
 import type { SnackbarOrigin } from "@mui/material/Snackbar";
 
 type ToastOptions = {
   message: string;
+  type?: AlertColor; // 'success' | 'error' | 'warning' | 'info'
   duration?: number;
   position?: SnackbarOrigin;
 };
@@ -16,23 +23,34 @@ type ToastContextType = {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider = ({ children }: { children: ReactNode }) => {
+export const ToastProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [type, setType] = useState<AlertColor>("info");
   const [duration, setDuration] = useState(4000);
   const [position, setPosition] = useState<SnackbarOrigin>({
     vertical: "bottom",
     horizontal: "center",
   });
 
-  const showToast = ({ message, duration = 4000, position }: ToastOptions) => {
+  const showToast = ({
+    message,
+    type = "info",
+    duration = 4000,
+    position,
+  }: ToastOptions) => {
     setMessage(message);
+    setType(type);
     setDuration(duration);
     if (position) setPosition(position);
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (
+    _event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") return;
     setOpen(false);
   };
 
@@ -40,22 +58,21 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <Snackbar
-        anchorOrigin={position}
         open={open}
         autoHideDuration={duration}
         onClose={handleClose}
-        message={message}
-        action={
-          <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleClose}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        }
-      />
+        anchorOrigin={position}
+      >
+        <MuiAlert
+          onClose={handleClose}
+          severity={type}
+          elevation={6}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {message}
+        </MuiAlert>
+      </Snackbar>
     </ToastContext.Provider>
   );
 };

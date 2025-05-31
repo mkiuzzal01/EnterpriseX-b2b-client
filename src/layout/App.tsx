@@ -2,56 +2,77 @@ import { Outlet } from "react-router-dom";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import { IconButton, Stack, TextField, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  createTheme,
+  ThemeProvider,
+  CssBaseline,
+} from "@mui/material";
 import { SearchIcon } from "lucide-react";
-import { useMemo } from "react";
-import User from "./components/User";
-import { navigation } from "./Navigation";
 import ProtectedRoute from "../route/protectedRoute";
-// import { useAppDispatch } from "../redux/hooks";
+import User from "./components/User";
+import Notification from "./components/Notification";
+import { navigation } from "./Navigation";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#facc15", 
+    },
+    background: {
+      default: "#f9fafb",
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
+});
 
 const branding = {
   title: "EnterpriseX",
   homeUrl: "/overview",
+  logo: "",
 };
 
-const App = () => {
-  // const dispatch = useAppDispatch();
-  const ToolbarActionsSearch = useMemo(
-    () => () => (
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <Tooltip title="Search" enterDelay={1000}>
-          <IconButton
-            type="button"
-            aria-label="Open search"
-            sx={{ display: { xs: "inline", md: "none" } }}
-          >
-            <SearchIcon />
+const ToolbarActionsSearch = () => (
+  <Stack direction="row" alignItems="center" spacing={1}>
+    <Tooltip title="Search" enterDelay={1000}>
+      <IconButton
+        type="button"
+        aria-label="Open search"
+        sx={{ display: { xs: "inline", md: "none" } }}
+      >
+        <SearchIcon size={20} />
+      </IconButton>
+    </Tooltip>
+
+    <TextField
+      label="Search"
+      variant="outlined"
+      size="small"
+      sx={{ display: { xs: "none", md: "inline-flex" }, mr: 1 }}
+      InputProps={{
+        endAdornment: (
+          <IconButton type="button" aria-label="Search" size="small">
+            <SearchIcon size={18} />
           </IconButton>
-        </Tooltip>
+        ),
+      }}
+    />
 
-        <TextField
-          label="Search"
-          variant="outlined"
-          size="small"
-          sx={{ display: { xs: "none", md: "inline-flex" }, mr: 1 }}
-          InputProps={{
-            endAdornment: (
-              <IconButton type="button" aria-label="Search" size="small">
-                <SearchIcon />
-              </IconButton>
-            ),
-          }}
-        />
+    <ThemeSwitcher />
+    <Notification />
+  </Stack>
+);
 
-        <ThemeSwitcher />
-      </Stack>
-    ),
-    []
-  );
-
+const App = () => {
   return (
-      <ProtectedRoute>
+    <ProtectedRoute>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <ReactRouterAppProvider navigation={navigation} branding={branding}>
           <DashboardLayout
             slots={{
@@ -64,7 +85,8 @@ const App = () => {
             </PageContainer>
           </DashboardLayout>
         </ReactRouterAppProvider>
-      </ProtectedRoute>
+      </ThemeProvider>
+    </ProtectedRoute>
   );
 };
 

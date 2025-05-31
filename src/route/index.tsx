@@ -29,8 +29,8 @@ export const route = createBrowserRouter([
     Component: App,
     errorElement: <NotFound />,
     children: [
-      { path: "/overview", Component: Overview },
-      { path: "/profile", Component: Profile },
+      { path: "overview", Component: Overview },
+      { path: "profile", Component: Profile },
       { path: "create-user", Component: CreateUser },
       { path: "all-users", Component: AllUsers },
       { path: "create-product", Component: CreateProduct },
