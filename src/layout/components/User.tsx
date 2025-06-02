@@ -15,8 +15,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout, selectCurrentUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../../components/utils/tost-alert/ToastProvider";
-import { useGetUserQuery } from "../../redux/features/users/usersApi";
 import Loader from "../../components/pages/Loader";
+import { useSingleUserQuery } from "../../redux/features/users/usersApi";
 
 const User = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +24,9 @@ const User = () => {
   const { showToast } = useToast();
 
   const currentUser = useAppSelector(selectCurrentUser);
-  const { data: userInfo, isLoading } = useGetUserQuery(currentUser?.id ?? "");
+  const { data: userInfo, isLoading } = useSingleUserQuery(
+    currentUser?.id ?? ""
+  );
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -57,9 +59,9 @@ const User = () => {
     });
   };
 
-  const avatarSrc =
+  const profileImage =
     userInfo?.data?.image || "https://www.gravatar.com/avatar/?d=mp";
-  const displayName = userInfo?.data?.name || "Guest User";
+  const name = userInfo?.data?.name || "Guest User";
   const email = userInfo?.data?.email || "guest@example.com";
 
   return (
@@ -71,11 +73,7 @@ const User = () => {
         aria-haspopup="true"
         sx={{ ml: 1 }}
       >
-        <Avatar
-          src={avatarSrc}
-          alt={displayName}
-          sx={{ width: 32, height: 32 }}
-        />
+        <Avatar src={profileImage} alt={name} sx={{ width: 32, height: 32 }} />
       </IconButton>
 
       <Menu
@@ -102,7 +100,7 @@ const User = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
         <Typography sx={{ px: 2, pt: 1, fontWeight: "bold" }}>
-          {isLoading ? "Loading..." : displayName}
+          {isLoading ? "Loading..." : name}
         </Typography>
         <Typography
           sx={{ px: 2, pb: 1, color: "text.secondary", fontSize: 13 }}

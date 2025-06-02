@@ -15,19 +15,19 @@ import type { Navigation } from "@toolpad/core/AppProvider";
 
 export const navigation: Navigation = [
   {
-    title: "overview",
+    title: "Overview",
     icon: <FaArrowTrendUp />,
     children: [
       { segment: "overview", icon: <FaArrowTrendUp /> },
     ],
   },
   {
-    title: "profile",
+    title: "Profile",
     icon: <FaPerson />,
     children: [{ segment: "profile", icon: <FaPerson /> }],
   },
   {
-    title: "users",
+    title: "Users",
     icon: <FaUserGroup />,
     children: [
       { segment: "create-user", icon: <FaPlus /> },
@@ -35,7 +35,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "products",
+    title: "Products",
     icon: <FaList />,
     children: [
       { segment: "create-product", icon: <FaPlus /> },
@@ -47,7 +47,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "orders",
+    title: "Orders",
     icon: <FaPaypal />,
     children: [
       { segment: "create-order", icon: <FaPlus /> },
@@ -56,7 +56,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "notifications",
+    title: "Notifications",
     icon: <IoIosNotifications />,
     children: [
       { segment: "create-notice", icon: <FaPlus /> },
@@ -64,7 +64,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "requisitions",
+    title: "Requisitions",
     icon: <BsChatSquareQuoteFill />,
     children: [
       { segment: "create-requisition", icon: <FaPlus /> },
@@ -72,7 +72,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "feedback",
+    title: "Feedback",
     icon: <MdFeedback />,
     children: [
       { segment: "create-feedback", icon: <FaPlus /> },
@@ -80,7 +80,7 @@ export const navigation: Navigation = [
     ],
   },
   {
-    title: "gallery",
+    title: "Gallery",
     icon: <RiGalleryFill />,
     children: [
       { segment: "images", icon: <RiGalleryFill /> },

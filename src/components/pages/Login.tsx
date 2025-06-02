@@ -7,6 +7,7 @@ import { useLoginMutation } from "../../redux/features/auth/authApi";
 import { verifyToken } from "../../utils/verifyToken";
 import { setUser, type TUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../utils/tost-alert/ToastProvider";
+import Loader from "./Loader";
 
 type FormValues = {
   email: string;
@@ -16,8 +17,10 @@ type FormValues = {
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const { showToast } = useToast();
+
+  if (isLoading) return <Loader />;
 
   const onSubmit = async (data: FormValues) => {
     try {

@@ -9,12 +9,7 @@ import {
   Avatar,
   Chip,
   LinearProgress,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Divider,
+  IconButton
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
@@ -53,37 +48,6 @@ const pieData = [
   { name: "Desktop", value: 45, color: "#8884d8" },
   { name: "Mobile", value: 35, color: "#82ca9d" },
   { name: "Tablet", value: 20, color: "#ffc658" },
-];
-
-const recentActivities = [
-  {
-    id: 1,
-    user: "John Doe",
-    action: "Created new order",
-    time: "2 min ago",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 2,
-    user: "Jane Smith",
-    action: "Updated product listing",
-    time: "5 min ago",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 3,
-    user: "Mike Johnson",
-    action: "Completed payment",
-    time: "10 min ago",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 4,
-    user: "Sarah Wilson",
-    action: "Left a review",
-    time: "15 min ago",
-    avatar: "/api/placeholder/40/40",
-  },
 ];
 
 const StatCard: React.FC<{
@@ -312,7 +276,7 @@ const Overview: React.FC = () => {
               </Typography>
               <Chip label="Live" color="success" size="small" />
             </Box>
-            <List>
+            {/* <List>
               {recentActivities.map((activity, index) => (
                 <Box key={activity.id}>
                   <ListItem alignItems="flex-start" sx={{ px: 0 }}>
@@ -340,7 +304,7 @@ const Overview: React.FC = () => {
                   {index < recentActivities.length - 1 && <Divider />}
                 </Box>
               ))}
-            </List>
+            </List> */}
           </Paper>
         </Grid>
 

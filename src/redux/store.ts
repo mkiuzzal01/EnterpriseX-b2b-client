@@ -32,7 +32,7 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(baseApi.middleware),
-  devTools: import.meta.env && import.meta.env.MODE !== "production",
+  devTools: import.meta.env && import.meta.env.VITE_MODE !== "production",
 });
 
 export type RootState = ReturnType<typeof store.getState>;
