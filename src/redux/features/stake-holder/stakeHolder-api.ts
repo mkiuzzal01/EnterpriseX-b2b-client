@@ -1,26 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TQueryParam, TResponseRedux } from "../../../types/global";
 import { baseApi } from "../../api/baseApi";
 
-const userApi = baseApi.injectEndpoints({
+const stakeHolderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    //get all users:
-    allUsers: builder.query({
-      query: () => ({
-        url: "/user/all-user",
-        method: "GET",
-      }),
-    }),
-
-    //this is single users:
-    singleUser: builder.query({
-      query: (id: string) => ({
-        url: `/user/single-user/${id}`,
-        method: "GET",
-      }),
-    }),
-
-    //this is for all stack holder:
+    //get all stack holder:
     allStakeHolder: builder.query({
       query: (args) => {
         const params = new URLSearchParams();
@@ -35,7 +18,7 @@ const userApi = baseApi.injectEndpoints({
           params: params,
         };
       },
-      providesTags: ["allStakeHolder"],
+      // providesTags: ["allStakeHolder"],
       transformResponse: (response: TResponseRedux<any>) => {
         return {
           data: response.data,
@@ -43,10 +26,16 @@ const userApi = baseApi.injectEndpoints({
         };
       },
     }),
-
-
+    //create stakeHolder:
+    createStakeHolder: builder.mutation({
+      query: (data) => ({
+        url: "/user/create-stakeholder",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useAllUsersQuery, useSingleUserQuery, useAllStakeHolderQuery } =
-  userApi;
+export const { useAllStakeHolderQuery, useCreateStakeHolderMutation } =
+  stakeHolderApi;

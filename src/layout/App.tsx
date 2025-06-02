@@ -83,8 +83,9 @@ const App = () => {
             <Paper
               elevation={0}
               sx={{
-                width: "90%",
+                width: "95%",
                 marginX: "auto",
+                marginTop: "2px",
               }}
             >
               <Outlet />

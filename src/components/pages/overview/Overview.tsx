@@ -9,7 +9,7 @@ import {
   Avatar,
   Chip,
   LinearProgress,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
@@ -111,9 +111,6 @@ const Overview: React.FC = () => {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box mb={4}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Dashboard Overview
-        </Typography>
         <Typography variant="body1" color="textSecondary">
           Welcome back! Here's what's happening with your business today.
         </Typography>

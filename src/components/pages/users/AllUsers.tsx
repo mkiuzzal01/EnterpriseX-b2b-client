@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import DataTable from "../../../shared/DataTable";
 import Loader from "../Loader";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
-import { useAllUsersQuery } from "../../../redux/features/users/usersApi";
+import { useAllUsersQuery } from "../../../redux/features/user/user-api";
 
 const userColumns = [
   { field: "email", headerName: "Email", width: 200 },

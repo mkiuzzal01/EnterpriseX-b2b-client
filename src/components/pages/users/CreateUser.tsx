@@ -1,6 +1,6 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
-import { Box,Button,Paper, Grid } from "@mui/material";
+import { Box, Button, Paper, Grid } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
 import TextInput from "../../utils/input-fields/TextInput";
@@ -10,42 +10,63 @@ import { GrAction } from "react-icons/gr";
 import { FaUser } from "react-icons/fa6";
 import { MdAccountBalance, MdSecurity } from "react-icons/md";
 import FormHeader from "../../utils/FormHeader";
-
-type RegistrationProps = {
-  role: string;
-  password?: string;
-  name: {
-    firstName: string;
-    middleName?: string;
-    lastName: string;
-  };
-  email: string;
-  phone?: string;
-  nid: string;
-  dateOfBirth: string;
-  gender: string;
-  dateOfJoining: string;
-  address: {
-    presentAddress: string;
-    permanentAddress: string;
-  };
-  bankAccountInfo?: {
-    paymentMethod: string;
-    bankName: string;
-    accountNumber: string;
-  };
-};
+import { useCreateSellerMutation } from "../../../redux/features/seller/seller-api";
+import { useCreateStakeHolderMutation } from "../../../redux/features/stake-holder/stakeHolder-api";
+import type { FieldValues } from "react-hook-form";
 
 const CreateUser = () => {
+  const [addSeller] = useCreateSellerMutation();
+  const [addStakeHolder] = useCreateStakeHolderMutation();
   const [role, setRole] = useState<string>("");
   const [isSeller, setIsSeller] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsSeller(role === "Seller");
+    setIsSeller(role === "seller");
   }, [role]);
 
-  const onSubmit = (data: RegistrationProps) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data: FieldValues) => {
+    let res;
+    if (role === "admin") {
+      const stakeHolder = {
+        password: data?.password,
+        stakeholder: {
+          name: data?.name,
+          email: data?.email,
+          role: data?.role,
+          status: data?.status,
+          phone: data?.phone,
+          nid: data?.nid,
+          dateOfBirth: data?.dateOfBirth,
+          gender: data?.gender,
+          dateOfJoining: data?.dateOfJoining,
+          address: data?.address,
+        },
+      };
+      // console.log(stakeHolder);
+      res = await addStakeHolder(stakeHolder);
+    } else if (role === "seller") {
+      const seller = {
+        password: data?.password,
+        seller: {
+          name: data?.name,
+          email: data?.email,
+          role: data?.role,
+          status: data?.status,
+          phone: data?.phone,
+          nid: data?.nid,
+          dateOfBirth: data?.dateOfBirth,
+          gender: data?.gender,
+          dateOfJoining: data?.dateOfJoining,
+          address: data?.address,
+          bankAccountInfo: data?.bankAccountInfo,
+        },
+      };
+
+      console.log(seller);
+      res = await addSeller(seller);
+    }
+    console.log(res);
+    console.log(data);
   };
 
   return (
@@ -67,7 +88,7 @@ const CreateUser = () => {
             <SelectInputField
               name="role"
               label="Role"
-              options={["Admin", "Seller"]}
+              options={["admin", "seller"]}
               requiredMessage="Select a role"
               onChange={(value) => setRole(value)}
             />
@@ -110,7 +131,7 @@ const CreateUser = () => {
               <SelectInputField
                 name="gender"
                 label="Gender"
-                options={["Male", "Female", "Other"]}
+                options={["male", "female", "other"]}
                 requiredMessage="Gender is required"
               />
             </Grid>
@@ -156,7 +177,7 @@ const CreateUser = () => {
                   <SelectInputField
                     name="bankAccountInfo.paymentMethod"
                     label="Payment Method"
-                    options={["Bank Transfer", "Mobile Banking"]}
+                    options={["bankTransfer", "mobileBanking"]}
                     requiredMessage="Payment method is required"
                   />
                 </Grid>
@@ -164,7 +185,7 @@ const CreateUser = () => {
                   <SelectInputField
                     name="bankAccountInfo.bankName"
                     label="Bank Name"
-                    options={["DBBL", "City Bank", "Brac Bank"]}
+                    options={["bKash", "Nagad", "dhakaBank"]}
                     requiredMessage="Bank name is required"
                   />
                 </Grid>
