@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
 import {
   IconButton,
   Stack,
@@ -10,6 +9,7 @@ import {
   createTheme,
   ThemeProvider,
   CssBaseline,
+  Paper,
 } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import ProtectedRoute from "../route/protectedRoute";
@@ -20,7 +20,7 @@ import { navigation } from "./Navigation";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#facc15", 
+      main: "#facc15",
     },
     background: {
       default: "#f9fafb",
@@ -80,9 +80,15 @@ const App = () => {
               toolbarAccount: User,
             }}
           >
-            <PageContainer breadcrumbs={[]} title="">
+            <Paper
+              elevation={0}
+              sx={{
+                width: "90%",
+                marginX: "auto",
+              }}
+            >
               <Outlet />
-            </PageContainer>
+            </Paper>
           </DashboardLayout>
         </ReactRouterAppProvider>
       </ThemeProvider>

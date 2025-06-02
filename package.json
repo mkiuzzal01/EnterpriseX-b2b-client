@@ -12,10 +12,11 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^7.1.0",
+    "@mui/icons-material": "^7.1.1",
     "@mui/joy": "^5.0.0-beta.52",
-    "@mui/material": "^7.1.0",
+    "@mui/material": "^7.1.1",
     "@mui/styled-engine-sc": "^7.1.0",
+    "@mui/x-data-grid": "^8.5.0",
     "@mui/x-date-pickers": "^8.3.1",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.7",
