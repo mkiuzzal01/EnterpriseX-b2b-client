@@ -12,61 +12,85 @@ import { MdAccountBalance, MdSecurity } from "react-icons/md";
 import FormHeader from "../../utils/FormHeader";
 import { useCreateSellerMutation } from "../../../redux/features/seller/seller-api";
 import { useCreateStakeHolderMutation } from "../../../redux/features/stake-holder/stakeHolder-api";
+import { useToast } from "../../utils/tost-alert/ToastProvider";
+import Loader from "../Loader";
 import type { FieldValues } from "react-hook-form";
 
 const CreateUser = () => {
-  const [addSeller] = useCreateSellerMutation();
-  const [addStakeHolder] = useCreateStakeHolderMutation();
+  const [addSeller, { isLoading }] = useCreateSellerMutation();
+  const [addStakeHolder, { isLoading: isFacing }] =
+    useCreateStakeHolderMutation();
   const [role, setRole] = useState<string>("");
   const [isSeller, setIsSeller] = useState<boolean>(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     setIsSeller(role === "seller");
   }, [role]);
 
   const onSubmit = async (data: FieldValues) => {
-    let res;
-    if (role === "admin") {
-      const stakeHolder = {
-        password: data?.password,
-        stakeholder: {
-          name: data?.name,
-          email: data?.email,
-          role: data?.role,
-          status: data?.status,
-          phone: data?.phone,
-          nid: data?.nid,
-          dateOfBirth: data?.dateOfBirth,
-          gender: data?.gender,
-          dateOfJoining: data?.dateOfJoining,
-          address: data?.address,
-        },
-      };
-      // console.log(stakeHolder);
-      res = await addStakeHolder(stakeHolder);
-    } else if (role === "seller") {
-      const seller = {
-        password: data?.password,
-        seller: {
-          name: data?.name,
-          email: data?.email,
-          role: data?.role,
-          status: data?.status,
-          phone: data?.phone,
-          nid: data?.nid,
-          dateOfBirth: data?.dateOfBirth,
-          gender: data?.gender,
-          dateOfJoining: data?.dateOfJoining,
-          address: data?.address,
-          bankAccountInfo: data?.bankAccountInfo,
-        },
-      };
+    try {
+      if (isFacing || isLoading) return <Loader />;
+      let res;
+      if (role === "admin") {
+        const stakeHolder = {
+          password: data?.password,
+          stakeholder: {
+            name: data?.name,
+            email: data?.email,
+            role: data?.role,
+            status: data?.status,
+            phone: data?.phone,
+            nid: data?.nid,
+            dateOfBirth: data?.dateOfBirth,
+            gender: data?.gender,
+            dateOfJoining: data?.dateOfJoining,
+            address: data?.address,
+          },
+        };
+        res = await addStakeHolder(stakeHolder);
+      } else if (role === "seller") {
+        const seller = {
+          password: data?.password,
+          seller: {
+            name: data?.name,
+            email: data?.email,
+            role: data?.role,
+            phone: data?.phone,
+            nid: data?.nid,
+            dateOfBirth: data?.dateOfBirth,
+            gender: data?.gender,
+            dateOfJoining: data?.dateOfJoining,
+            address: data?.address,
+            bankAccountInfo: data?.bankAccountInfo,
+          },
+        };
 
-      console.log(seller);
-      res = await addSeller(seller);
+        res = await addSeller(seller);
+      }
+      if (res?.data.success) {
+        setRole("");
+        showToast({
+          message: res.data.message,
+          duration: 2000,
+          position: {
+            horizontal: "right",
+            vertical: "top",
+          },
+          type: "success",
+        });
+      }
+    } catch {
+      showToast({
+        message: "Something wrong",
+        duration: 2000,
+        position: {
+          horizontal: "right",
+          vertical: "top",
+        },
+        type: "error",
+      });
     }
-    console.log(res);
-    console.log(data);
   };
 
   return (

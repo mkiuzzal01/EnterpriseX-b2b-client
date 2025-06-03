@@ -28,6 +28,8 @@ const User = () => {
     currentUser?.id ?? ""
   );
 
+  // console.log(userInfo); 
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 

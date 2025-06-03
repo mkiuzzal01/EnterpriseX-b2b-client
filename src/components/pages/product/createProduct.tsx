@@ -13,6 +13,7 @@ import SectionHeader from "../../utils/section/SectionHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
 import VariantsSection from "../../utils/VariantsSection";
 import FormHeader from "../../utils/FormHeader";
+import { useAllVariantQuery } from "../../../redux/features/variant/variant-api";
 
 type Attribute = {
   value: string;
@@ -42,6 +43,8 @@ type CreateProductFormData = {
 };
 
 const CreateProduct = () => {
+  const { data, isLoading, isError } = useAllVariantQuery(undefined);
+  console.log(data);
   const [variants, setVariants] = useState<Variant[]>([
     { name: "", attributes: [{ value: "", quantity: 0 }] },
   ]);
