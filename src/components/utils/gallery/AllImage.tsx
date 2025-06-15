@@ -1,20 +1,29 @@
 import { useState } from "react";
-import image1 from "../../../assets/user-image.jpg";
-import { IconButton } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  Paper,
+  useTheme,
+  Typography,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import image1 from "../../../assets/user-image.jpg"; // ✅ adjust path
 
 type PropsType = {
   onClick?: (id: string) => void;
 };
 
-const images = Array?.from({ length: 6 }, (_, idx) => ({
+const images = Array.from({ length: 6 }, (_, idx) => ({
   id: (idx + 1).toString(),
   title: `Demo Image ${idx + 1}`,
   image: image1,
 }));
 
 const AllImage = ({ onClick }: PropsType) => {
+  const theme = useTheme();
+
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [imageList, setImageList] = useState(images);
 
@@ -22,57 +31,123 @@ const AllImage = ({ onClick }: PropsType) => {
     setSelectedImages((prev) =>
       prev.includes(id) ? prev.filter((imgId) => imgId !== id) : [...prev, id]
     );
+    onClick?.(id);
   };
 
   const handleDelete = (id: string) => {
-    setImageList(imageList.filter((img) => img.id !== id));
+    setImageList((prev) => prev.filter((img) => img.id !== id));
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2">
-      {imageList.map((image, idx) => (
-        <div
-          key={idx}
-          className={`relative group cursor-pointer border-2 rounded-lg overflow-hidden ${
-            selectedImages.includes(image?.id)
-              ? "border-blue-500"
-              : "border-gray-300"
-          }`}
-          onClick={() => {
-            toggleSelect(image?.id);
-            onClick?.(image?.id);
-          }}
-        >
-          {/* Image */}
-          <img src={image1} alt="" />
+    <Grid container spacing={2} sx={{ pt: 2 }}>
+      {imageList.map((image) => {
+        const isSelected = selectedImages.includes(image.id);
 
-          <div className="absolute top-0 right-0 w-full h-full bg-black bg-opacity-50 gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <IconButton size="large" color="success">
-              <CheckCircleIcon
+        return (
+          <Grid
+            size={{
+              xs: 6,
+              sm: 4,
+              md: 3,
+              lg: 2,
+            }}
+            key={image.id}
+            onClick={() => toggleSelect(image.id)}
+            sx={{ cursor: "pointer" }}
+          >
+            <Paper
+              elevation={isSelected ? 4 : 1}
+              sx={{
+                position: "relative",
+                border: "2px solid",
+                borderColor: isSelected
+                  ? theme.palette.primary.main
+                  : "divider",
+                borderRadius: 2,
+                overflow: "hidden",
+                transition: "0.3s",
+              }}
+            >
+              {/* Image */}
+              <Box sx={{ aspectRatio: "1 / 1", overflow: "hidden" }}>
+                <img
+                  src={image.image ?? (image.image as unknown as string)}
+                  alt={image.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+
+              {/* Overlay on hover */}
+              <Box
                 sx={{
-                  color: selectedImages.includes(image.id)
-                    ? "#4caf50"
-                    : "white",
-                }}
-              />
-            </IconButton>
-
-            {/* Show Delete Icon only if onClick is not provided */}
-            {!onClick && (
-              <IconButton
-                color="error"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(image.id);
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  bgcolor: "rgba(0, 0, 0, 0.5)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 1,
+                  opacity: 0,
+                  transition: "opacity 0.3s ease",
+                  "&:hover": {
+                    opacity: 1,
+                  },
                 }}
               >
-                <DeleteIcon sx={{ color: "white" }} />
-              </IconButton>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
+                <IconButton size="large">
+                  <CheckCircleIcon
+                    sx={{
+                      fontSize: 30,
+                      color: isSelected ? theme.palette.success.main : "#fff",
+                    }}
+                  />
+                </IconButton>
+
+                {!onClick && (
+                  <IconButton
+                    size="large"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(image.id);
+                    }}
+                  >
+                    <DeleteIcon sx={{ color: theme.palette.error.light }} />
+                  </IconButton>
+                )}
+              </Box>
+
+              {/* Optional title overlay */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 0,
+                  width: "100%",
+                  bgcolor: "rgba(0,0,0,0.6)",
+                  px: 1,
+                  py: 0.5,
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  color="white"
+                  noWrap
+                  title={image.title}
+                >
+                  {image.title}
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 };
 

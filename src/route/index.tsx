@@ -21,7 +21,7 @@ import CreateFeedback from "../components/pages/feedback/CreateFeedback";
 import Images from "../components/gallery/Images";
 import Login from "../components/pages/Login";
 import App from "../layout/App";
-import Folder from "../components/gallery/folder";
+import Folder from "../components/gallery/Folders";
 import NotFound from "../components/pages/NotFound";
 
 export const route = createBrowserRouter([

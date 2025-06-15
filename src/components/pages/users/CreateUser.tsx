@@ -39,7 +39,6 @@ const CreateUser = () => {
             name: data?.name,
             email: data?.email,
             role: data?.role,
-            status: data?.status,
             phone: data?.phone,
             nid: data?.nid,
             dateOfBirth: data?.dateOfBirth,
@@ -48,6 +47,7 @@ const CreateUser = () => {
             address: data?.address,
           },
         };
+        console.log(stakeHolder);
         res = await addStakeHolder(stakeHolder);
       } else if (role === "seller") {
         const seller = {
