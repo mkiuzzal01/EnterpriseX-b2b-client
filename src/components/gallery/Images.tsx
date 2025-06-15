@@ -1,73 +1,82 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import {
   Box,
-  DialogTitle,
-  Drawer,
-  InputAdornment,
+  Paper,
+  Select,
   MenuItem,
   OutlinedInput,
-  Select,
-  useMediaQuery,
+  InputAdornment,
   IconButton,
+  Fab,
+  Drawer,
+  DialogTitle,
   useTheme,
-  Paper,
+  useMediaQuery,
   Grid,
 } from "@mui/material";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { Search } from "@mui/icons-material";
+import { Search, AddPhotoAlternate } from "@mui/icons-material";
 import { GridCloseIcon } from "@mui/x-data-grid";
 import AddImage from "../utils/gallery/AddImage";
 import AllImage from "../utils/gallery/AllImage";
+import { useGetFoldersQuery } from "../../redux/features/gallery/folder-api";
+import Loader from "../pages/Loader";
+import type { TFolder } from "./TFolder";
 
-type PropsType = {
+type Props = {
   onClick?: (id: string) => void;
 };
 
-const Images = ({ onClick }: PropsType) => {
+export default function Images({ onClick }: Props) {
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState("");
-  const [search, setSearch] = useState("");
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [folderId, setFolderId] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
 
+  const { data: foldersData, isFetching } = useGetFoldersQuery({});
+
+  const theme = useTheme();
+  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  const handleDrawerClose = useCallback(() => setOpen(false), []);
+  const handleFolderChange = (id: string) => setFolderId(id);
+
+  if (isFetching) return <Loader />;
+
   return (
-    <Paper sx={{ p: 2, marginY: 2 }}>
-      {/* Top Control Panel */}
+    <Paper sx={{ p: 3, my: 3 }}>
       <Grid container spacing={2} alignItems="center">
-        {/* Folder Selector */}
-        <Grid size={{ xs: 12, sm: 4 }}>
+        {/* folder select */}
+        <Grid size={{ xs: 12, md: 4 }}>
           <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            value={folderId}
+            onChange={(e) => handleFolderChange(e.target.value)}
             fullWidth
             displayEmpty
             MenuProps={{
-              PaperProps: {
-                sx: {
-                  zIndex: theme.zIndex.modal + 1,
-                },
-              },
+              PaperProps: { sx: { zIndex: theme.zIndex.modal + 1 } },
             }}
           >
-            <MenuItem value="">Select Folder</MenuItem>
-            <MenuItem value="folder_1">Folder 1</MenuItem>
-            <MenuItem value="folder_2">Folder 2</MenuItem>
-            <MenuItem value="folder_3">Folder 3</MenuItem>
+            <MenuItem value="">
+              <em>Select folder</em>
+            </MenuItem>
+            {foldersData.data.map((folder: TFolder) => (
+              <MenuItem key={folder._id} value={folder._id}>
+                {folder.name}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
 
-        {/* Search Input */}
-        <Grid size={{ xs: 10, sm: 6 }}>
+        {/* search */}
+        <Grid size={{ xs: 10, md: 6 }}>
           <OutlinedInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             fullWidth
-            placeholder="Search"
+            placeholder="Search images"
             endAdornment={
               <InputAdornment position="end">
-                <IconButton>
+                <IconButton edge="end">
                   <Search />
                 </IconButton>
               </InputAdornment>
@@ -75,86 +84,66 @@ const Images = ({ onClick }: PropsType) => {
           />
         </Grid>
 
-        {/* Add Image FAB */}
-        <Grid size={{ xs: 2, sm: 2 }}>
-          <IconButton
-            onClick={() => setOpen(true)}
-            aria-label="Add Image"
-            size="large"
-            color="primary"
-            sx={{
-              borderRadius: "50%",
-              backgroundColor: theme.palette.grey[300],
-            }}
-          >
-            <AddPhotoAlternateIcon fontSize="inherit" />
-          </IconButton>
+        {/* add‑image fab */}
+        <Grid size={{ xs: 2, md: 2 }}>
+          <Fab color="primary" aria-label="add" onClick={() => setOpen(true)}>
+            <AddPhotoAlternate />
+          </Fab>
         </Grid>
       </Grid>
 
-      {/* Drawer for Image Upload */}
       <Drawer
         anchor="right"
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleDrawerClose}
         ref={drawerRef}
         sx={{
-          zIndex: theme.zIndex.drawer + 1,
+          zIndex: theme.zIndex.drawer + 5,
           "& .MuiDrawer-paper": {
-            width: isSmallScreen ? "80%" : "30%",
+            width: isSmDown ? "80%" : "30%",
             p: 2,
-            zIndex: theme.zIndex.modal + 2,
+            zIndex: theme.zIndex.modal + 5,
           },
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
           <DialogTitle>Upload Image</DialogTitle>
-          <IconButton onClick={() => setOpen(false)}>
+          <IconButton onClick={handleDrawerClose}>
             <GridCloseIcon />
           </IconButton>
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            fullWidth
-            displayEmpty
-            MenuProps={{
-              container: drawerRef.current,
-              disablePortal: true,
-              PaperProps: {
-                sx: {
-                  zIndex: theme.zIndex.modal + 3,
-                },
-              },
-            }}
-          >
-            <MenuItem value="">Select Folder</MenuItem>
-            <MenuItem value="image_1">Image 1</MenuItem>
-            <MenuItem value="image_2">Image 2</MenuItem>
-            <MenuItem value="image_3">Image 3</MenuItem>
-          </Select>
+        <Select
+          value={folderId}
+          onChange={(e) => handleFolderChange(e.target.value)}
+          fullWidth
+          displayEmpty
+          MenuProps={{
+            container: drawerRef.current,
+            disablePortal: true,
+            PaperProps: {
+              sx: { zIndex: theme.zIndex.modal + 10 },
+            },
+          }}
+        >
+          <MenuItem value="">
+            <em>Select folder</em>
+          </MenuItem>
+          {foldersData.data.map((folder: TFolder) => (
+            <MenuItem key={folder._id} value={folder._id}>
+              {folder.name}
+            </MenuItem>
+          ))}
+        </Select>
 
+        <Box sx={{ mt: 3 }}>
           <AddImage />
         </Box>
       </Drawer>
 
-      <Box sx={{ my: 2, borderBottom: `1px solid ${theme.palette.divider}` }} />
+      <Box sx={{ my: 3, borderBottom: `1px solid ${theme.palette.divider}` }} />
 
-      {/* Image Gallery */}
-      <Box sx={{ mt: 4 }}>
-        <AllImage onClick={onClick} />
-      </Box>
+      <AllImage onClick={onClick} />
     </Paper>
   );
-};
-
-export default Images;
+}

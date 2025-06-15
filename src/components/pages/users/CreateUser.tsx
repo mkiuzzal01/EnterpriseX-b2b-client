@@ -47,7 +47,7 @@ const CreateUser = () => {
             address: data?.address,
           },
         };
-        console.log(stakeHolder);
+
         res = await addStakeHolder(stakeHolder);
       } else if (role === "seller") {
         const seller = {

@@ -11,41 +11,95 @@ import {
   useTheme,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Search } from "lucide-react";
 import ReusableForm from "../../shared/ReusableFrom";
 import TextInput from "../utils/input-fields/TextInput";
 import image1 from "../../assets/mount-a-folder-as-a-drive.webp";
 import type { FieldValue } from "react-hook-form";
+import {
+  useCreateFolderMutation,
+  useDeleteFolderMutation,
+  useGetFoldersQuery,
+  // useUpdateFolderMutation,
+} from "../../redux/features/gallery/folder-api";
+import { useToast } from "../utils/tost-alert/ToastProvider";
+import Loader from "../pages/Loader";
 
 type FolderItem = {
-  id: string;
-  title: string;
+  _id: string;
+  name: string;
   image: typeof image1;
 };
 
-const initialFolders: FolderItem[] = Array.from({ length: 6 }, (_, i) => ({
-  id: (i + 1).toString(),
-  title: `Folder ${i + 1}`,
-  image: image1,
-}));
-
 const Folders = () => {
+  const { data: foldersData, isFetching, refetch } = useGetFoldersQuery({});
+  const [createFolder, { isLoading }] = useCreateFolderMutation();
+  const [deleteFolder, { isLoading: isDeleting }] = useDeleteFolderMutation();
+  // const [updateFolder, { isLoading: isUpdating }] = useUpdateFolderMutation();
+  const { showToast } = useToast();
   const theme = useTheme();
-  const [folders, setFolders] = useState<FolderItem[]>(initialFolders);
   const [search, setSearch] = useState("");
 
-  const handleDelete = (id: string) => {
-    setFolders((prev) => prev.filter((f) => f.id !== id));
+  // Handle folder deletion:
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteFolder(id);
+      if (res.data.success) {
+        showToast({
+          message: res.data?.message,
+          duration: 2000,
+          position: {
+            horizontal: "right",
+            vertical: "top",
+          },
+          type: "success",
+        });
+        refetch();
+      }
+    } catch {
+      showToast({
+        message: "Failed to delete folder",
+        duration: 2000,
+        position: {
+          horizontal: "right",
+          vertical: "top",
+        },
+        type: "error",
+      });
+    }
   };
 
-  const handleCreate = (data: FieldValue<any>) => {
-    console.log(data);
+  // Handle folder creation:
+  const handleCreate = async (data: FieldValue<any>) => {
+    try {
+      const res = await createFolder({ name: data.folderName });
+      if (res.data.success) {
+        showToast({
+          message: res.data?.message,
+          duration: 2000,
+          position: {
+            horizontal: "right",
+            vertical: "top",
+          },
+          type: "success",
+        });
+        refetch();
+      }
+    } catch {
+      showToast({
+        message: "Failed to create folder",
+        duration: 2000,
+        position: {
+          horizontal: "right",
+          vertical: "top",
+        },
+        type: "error",
+      });
+    }
   };
 
-  const filteredFolders = folders.filter((folder) =>
-    folder.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Show loader while creating folder
+  if (isLoading || isFetching) return <Loader />;
 
   return (
     <Paper sx={{ p: 2, marginY: 2 }}>
@@ -97,95 +151,51 @@ const Folders = () => {
 
       <Box sx={{ my: 2, borderBottom: `1px solid ${theme.palette.divider}` }} />
       {/* Folder Grid */}
-      <Grid container spacing={2}>
-        {filteredFolders.map((folder) => (
-          <Grid
-            size={{
-              xs: 6,
-              sm: 4,
-              md: 3,
-              lg: 2,
-            }}
-            key={folder.id}
-          >
-            <Box
-              sx={{
-                position: "relative",
-                border: "1px solid",
-                borderRadius: 2,
-                overflow: "hidden",
-                cursor: "pointer",
-                transition: "border-color 0.3s",
-              }}
-            >
-              <Box
-                sx={{
-                  aspectRatio: "1 / 1",
-                  display: "flex",
-                  flexDirection: "column",
-                  bgcolor: "grey.100",
-                }}
-              >
-                <Typography
-                  variant="subtitle2"
-                  align="center"
-                  sx={{ py: 1, fontWeight: 600 }}
-                >
-                  {folder.title}
-                </Typography>
-                <Box
-                  component="img"
-                  src={folder.image ?? (folder.image as unknown as string)}
-                  alt={folder.title}
+      {foldersData?.data?.length ? (
+        <Grid container spacing={2}>
+          {foldersData.data
+            .filter((folder: FolderItem) =>
+              folder.name.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((folder: FolderItem) => (
+              <Grid size={{ xs: 6, sm: 6, md: 2 }} key={folder._id}>
+                <Paper
                   sx={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    flexGrow: 1,
-                  }}
-                />
-              </Box>
-
-              {/* Hover Overlay */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  inset: 0,
-                  bgcolor: "rgba(0, 0, 0, 0.5)",
-                  opacity: 0,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 2,
-                  transition: "opacity 0.3s ease",
-                  "&:hover": {
-                    opacity: 1,
-                  },
-                }}
-              >
-                <IconButton size="medium">
-                  <CheckCircleIcon />
-                </IconButton>
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(folder.id);
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    position: "relative",
                   }}
                 >
-                  <DeleteIcon
-                    titleAccess="Delete Folder"
+                  <img
+                    src={image1}
+                    alt={folder.name}
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                  <Typography variant="h6" sx={{ mt: 1 }}>
+                    {folder.name}
+                  </Typography>
+                  <IconButton
+                    onClick={() => handleDelete(folder._id)}
                     sx={{
-                      fontSize: 28,
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
                       color: theme.palette.error.main,
                     }}
-                  />
-                </IconButton>
-              </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+                  >
+                    {isDeleting ? <Loader /> : <DeleteIcon />}
+                  </IconButton>
+                </Paper>
+              </Grid>
+            ))}
+        </Grid>
+      ) : (
+        <Typography variant="body1" color="textSecondary" align="center">
+          No folders found.
+        </Typography>
+      )}
     </Paper>
   );
 };
