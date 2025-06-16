@@ -10,10 +10,12 @@ import {
 } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
+type OptionType = string | { _id?: string; label?: string; name?: string };
+
 type SelectInputFieldProps = {
   label: string;
   name: string;
-  options: string[];
+  options: OptionType[];
   defaultValue?: string;
   requiredMessage?: string;
   disabled?: boolean;
@@ -44,19 +46,32 @@ const SelectInputField: React.FC<SelectInputFieldProps> = ({
             {...field}
             label={label}
             value={field.value || ""}
-            onChange={(event: SelectChangeEvent) => {
-              const value = event.target.value as string;
-              field.onChange(value);
-              if (onChange) {
-                onChange(value);
-              }
-            }}
-          >
-            {options.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
+              onChange={(event: SelectChangeEvent) => {
+                const value = event.target.value as string;
+                field.onChange(value);
+                if (onChange) {
+                  onChange(value);
+                }
+              }}
+            >
+              {options.map((option) => {
+                if (typeof option === "string") {
+                  return (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  );
+                } else {
+                  return (
+                    <MenuItem
+                      key={option._id || option.label || option.name || ""}
+                      value={option._id || option.label || option.name || ""}
+                    >
+                      {option.name || option.label || option._id || ""}
+                    </MenuItem>
+                  );
+                }
+              })}
           </Select>
           {fieldState.error && (
             <FormHelperText>{fieldState.error.message}</FormHelperText>

@@ -6,26 +6,25 @@ import {
   Paper,
   useTheme,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import image1 from "../../../assets/user-image.jpg"; // ✅ adjust path
+import type { TImage } from "../../gallery/TGallery";
+import { useDeleteImageMutation } from "../../../redux/features/gallery/image-api";
+import { useToast } from "../tost-alert/ToastProvider";
 
 type PropsType = {
   onClick?: (id: string) => void;
+  refetch?: () => void;
+  imagesData: TImage[];
 };
 
-const images = Array.from({ length: 6 }, (_, idx) => ({
-  id: (idx + 1).toString(),
-  title: `Demo Image ${idx + 1}`,
-  image: image1,
-}));
-
-const AllImage = ({ onClick }: PropsType) => {
+const AllImage = ({ onClick, imagesData, refetch }: PropsType) => {
   const theme = useTheme();
-
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [imageList, setImageList] = useState(images);
+  const { showToast } = useToast();
+  const [deleteImage, { isLoading: isDeleting }] = useDeleteImageMutation();
 
   const toggleSelect = (id: string) => {
     setSelectedImages((prev) =>
@@ -34,14 +33,38 @@ const AllImage = ({ onClick }: PropsType) => {
     onClick?.(id);
   };
 
-  const handleDelete = (id: string) => {
-    setImageList((prev) => prev.filter((img) => img.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteImage(id);
+      if (res.data.success) {
+        showToast({
+          message: res.data.message || "Image deleted successfully!",
+          type: "success",
+          duration: 3000,
+          position: {
+            vertical: "top",
+            horizontal: "center",
+          },
+        });
+      }
+      refetch?.();
+    } catch {
+      showToast({
+        message: "Image deletion failed!",
+        type: "error",
+        duration: 3000,
+        position: {
+          vertical: "top",
+          horizontal: "center",
+        },
+      });
+    }
   };
 
   return (
     <Grid container spacing={2} sx={{ pt: 2 }}>
-      {imageList.map((image) => {
-        const isSelected = selectedImages.includes(image.id);
+      {imagesData?.map((item) => {
+        const isSelected = selectedImages.includes(item._id);
 
         return (
           <Grid
@@ -51,8 +74,8 @@ const AllImage = ({ onClick }: PropsType) => {
               md: 3,
               lg: 2,
             }}
-            key={image.id}
-            onClick={() => toggleSelect(image.id)}
+            key={item._id}
+            onClick={() => toggleSelect(item._id)}
             sx={{ cursor: "pointer" }}
           >
             <Paper
@@ -71,8 +94,8 @@ const AllImage = ({ onClick }: PropsType) => {
               {/* Image */}
               <Box sx={{ aspectRatio: "1 / 1", overflow: "hidden" }}>
                 <img
-                  src={image.image ?? (image.image as unknown as string)}
-                  alt={image.title}
+                  src={item?.photo?.url}
+                  alt={item?.photoName}
                   style={{
                     width: "100%",
                     height: "100%",
@@ -115,10 +138,14 @@ const AllImage = ({ onClick }: PropsType) => {
                     size="large"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(image.id);
+                      handleDelete(item._id);
                     }}
                   >
-                    <DeleteIcon sx={{ color: theme.palette.error.light }} />
+                    {isDeleting ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      <DeleteIcon sx={{ color: theme.palette.error.light }} />
+                    )}
                   </IconButton>
                 )}
               </Box>
@@ -138,9 +165,9 @@ const AllImage = ({ onClick }: PropsType) => {
                   variant="caption"
                   color="white"
                   noWrap
-                  title={image.title}
+                  title={item.photoName}
                 >
-                  {image.title}
+                  {item.photoName}
                 </Typography>
               </Box>
             </Paper>
