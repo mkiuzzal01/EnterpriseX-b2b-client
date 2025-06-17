@@ -1,6 +1,6 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
-import { Box, Button, Paper, Grid } from "@mui/material";
+import { Box, Button, Paper, Grid, Drawer } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
 import TextInput from "../../utils/input-fields/TextInput";
@@ -15,8 +15,12 @@ import { useCreateStakeHolderMutation } from "../../../redux/features/stake-hold
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import Loader from "../../../shared/Loader";
 import type { FieldValues } from "react-hook-form";
+import ReusableDrawer from "../../../shared/ReusableDrawer";
+import Images from "../../gallery/Images";
 
 const CreateUser = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectImage, setSelectImage] = useState("");
   const [addSeller, { isLoading }] = useCreateSellerMutation();
   const [addStakeHolder, { isLoading: isFacing }] =
     useCreateStakeHolderMutation();
@@ -66,7 +70,8 @@ const CreateUser = () => {
           },
         };
 
-        res = await addSeller(seller);
+        console.log(seller);
+        // res = await addSeller(seller);
       }
       if (res?.data.success) {
         setRole("");
@@ -101,6 +106,21 @@ const CreateUser = () => {
             title="User Registration"
             subTitle="Please fill in authentic details below."
           />
+
+          {/* image */}
+          <Box>
+            <Button onClick={() => setDrawerOpen(true)}>Add image</Button>
+            <ReusableDrawer
+              width={"50%"}
+              open={drawerOpen}
+              onClose={() => {
+                setDrawerOpen(false);
+                return true;
+              }}
+            >
+              <Images onClick={setSelectImage} clicks={selectImage} />
+            </ReusableDrawer>
+          </Box>
 
           <SectionHeader
             icon={<GrAction />}

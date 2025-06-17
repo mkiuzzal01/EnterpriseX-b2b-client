@@ -12,8 +12,8 @@ const imageApi = baseApi.injectEndpoints({
     }),
     //update image:
     updateImage: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/gallery/update-photo/${id}`,
+      query: ({ _id, ...data }) => ({
+        url: `/gallery/update-photo/${_id}`,
         method: "PATCH",
         body: data,
       }),

@@ -10,20 +10,23 @@ import {
   Fab,
   useTheme,
   Grid,
+  DialogTitle,
 } from "@mui/material";
 import { Search, AddPhotoAlternate } from "@mui/icons-material";
 import AllImage from "../utils/gallery/AllImage";
 import { useGetFoldersQuery } from "../../redux/features/gallery/folder-api";
 import Loader from "../../shared/Loader";
 import type { TFolder } from "./TGallery";
-import SideDrawer from "../utils/gallery/SideDrawer";
 import { useGetImagesQuery } from "../../redux/features/gallery/image-api";
+import ReusableDrawer from "../../shared/ReusableDrawer";
+import AddMultipleImages from "../utils/gallery/AddImage";
 
 type Props = {
   onClick?: (id: string) => void;
+  clicks?: number;
 };
 
-export default function Images({ onClick }: Props) {
+export default function Images({ onClick, clicks }: Props) {
   const [open, setOpen] = useState<boolean>(false);
   const { data: foldersData, isFetching } = useGetFoldersQuery({});
   const [folderId, setFolderId] = useState<string>("");
@@ -93,20 +96,34 @@ export default function Images({ onClick }: Props) {
       </Grid>
 
       {/* side drawer for uploading images */}
-      <SideDrawer
+      <ReusableDrawer
         open={open}
-        refetch={refetch}
         onClose={() => {
           setOpen(false);
           return true;
         }}
-      />
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          <DialogTitle variant="h5">Upload Image</DialogTitle>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <AddMultipleImages
+            onClose={() => {
+              setOpen(false);
+              return true;
+            }}
+            refetch={refetch}
+          />
+        </Box>
+      </ReusableDrawer>
 
       <Box sx={{ my: 3, borderBottom: `1px solid ${theme.palette.divider}` }} />
 
       {/* load all image  from database  */}
       <AllImage
         refetch={refetch}
+        clicks={clicks}
         onClick={onClick}
         imagesData={imagesData?.data?.result}
       />
