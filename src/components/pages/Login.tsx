@@ -4,10 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import ReusableForm from "../../shared/ReusableFrom";
 import { useAppDispatch } from "../../redux/hooks";
 import { useLoginMutation } from "../../redux/features/auth/authApi";
-import { verifyToken } from "../../utils/verifyToken";
+import { verifyToken } from "../../lib/verifyToken";
 import { setUser, type TUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../utils/tost-alert/ToastProvider";
-import Loader from "./Loader";
+import Loader from "../../shared/Loader";
 
 type FormValues = {
   email: string;

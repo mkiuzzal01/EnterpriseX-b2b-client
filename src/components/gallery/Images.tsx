@@ -14,7 +14,7 @@ import {
 import { Search, AddPhotoAlternate } from "@mui/icons-material";
 import AllImage from "../utils/gallery/AllImage";
 import { useGetFoldersQuery } from "../../redux/features/gallery/folder-api";
-import Loader from "../pages/Loader";
+import Loader from "../../shared/Loader";
 import type { TFolder } from "./TGallery";
 import SideDrawer from "../utils/gallery/SideDrawer";
 import { useGetImagesQuery } from "../../redux/features/gallery/image-api";
@@ -28,15 +28,17 @@ export default function Images({ onClick }: Props) {
   const { data: foldersData, isFetching } = useGetFoldersQuery({});
   const [folderId, setFolderId] = useState<string>("");
   const [search, setSearch] = useState<string>("");
-  const { data: imagesData, isLoading, refetch } = useGetImagesQuery({
+  const {
+    data: imagesData,
+    isLoading,
+    refetch,
+  } = useGetImagesQuery({
     folderId: folderId || "",
     search: search || "",
   });
   const theme = useTheme();
   const handleFolderChange = (id: string) => setFolderId(id);
 
-  console.log(imagesData);
-  
   //show loader:
   if (isFetching || isLoading) return <Loader />;
 
@@ -57,7 +59,7 @@ export default function Images({ onClick }: Props) {
             <MenuItem value="">
               <em>Select folder</em>
             </MenuItem>
-            {foldersData.data.map((folder: TFolder) => (
+            {foldersData.data?.result?.map((folder: TFolder) => (
               <MenuItem key={folder._id} value={folder._id}>
                 {folder.name}
               </MenuItem>
@@ -102,7 +104,12 @@ export default function Images({ onClick }: Props) {
 
       <Box sx={{ my: 3, borderBottom: `1px solid ${theme.palette.divider}` }} />
 
-      <AllImage refetch={refetch} onClick={onClick} imagesData={imagesData?.data?.result} />
+      {/* load all image  from database  */}
+      <AllImage
+        refetch={refetch}
+        onClick={onClick}
+        imagesData={imagesData?.data?.result}
+      />
     </Paper>
   );
 }

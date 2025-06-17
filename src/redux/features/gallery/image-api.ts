@@ -27,10 +27,15 @@ const imageApi = baseApi.injectEndpoints({
     }),
     //get all images:
     getImages: builder.query({
-      query: ({ folderId, search }) => ({
-        url: `/gallery/all-photo?fields=${folderId}&searchTerm=${search}`,
-        method: "GET",
-      }),
+      query: ({ folderId, search }) => {
+        const query = new URLSearchParams();
+        if (folderId) query.append("folderId", folderId); 
+        if (search) query.append("searchTerm", search);
+        return {
+          url: `/gallery/all-photo?${query.toString()}`,
+          method: "GET",
+        };
+      },
     }),
     //get image by id:
     getImageById: builder.query({

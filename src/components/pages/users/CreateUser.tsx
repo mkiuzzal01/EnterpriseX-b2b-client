@@ -13,7 +13,7 @@ import FormHeader from "../../utils/FormHeader";
 import { useCreateSellerMutation } from "../../../redux/features/seller/seller-api";
 import { useCreateStakeHolderMutation } from "../../../redux/features/stake-holder/stakeHolder-api";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
-import Loader from "../Loader";
+import Loader from "../../../shared/Loader";
 import type { FieldValues } from "react-hook-form";
 
 const CreateUser = () => {

@@ -15,7 +15,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout, selectCurrentUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../../components/utils/tost-alert/ToastProvider";
-import Loader from "../../components/pages/Loader";
+import Loader from "../../shared/Loader";
 import { useSingleUserQuery } from "../../redux/features/user/user-api";
 
 const User = () => {

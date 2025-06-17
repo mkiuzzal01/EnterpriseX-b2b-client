@@ -21,7 +21,7 @@ import {
   PhotoLibrary,
 } from "@mui/icons-material";
 import ReusableForm from "../../../shared/ReusableFrom";
-import Loader from "../../pages/Loader";
+import Loader from "../../../shared/Loader";
 import { useGetFoldersQuery } from "../../../redux/features/gallery/folder-api";
 import SelectInputField from "../input-fields/SelectInputField";
 import ImageInput from "../input-fields/ImageInput";
@@ -230,7 +230,7 @@ const AddMultipleImages = ({ onClose, refetch }: Props) => {
             label="Select Folder"
             name="folderId"
             requiredMessage="Folder is required"
-            options={foldersData?.data || []}
+            options={foldersData?.data?.result || []}
           />
 
           {/* Drag and Drop Area */}

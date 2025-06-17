@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import DataTable from "../../../shared/DataTable";
-import Loader from "../Loader";
+import Loader from "../../../shared/Loader";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import { useAllUsersQuery } from "../../../redux/features/user/user-api";
 
