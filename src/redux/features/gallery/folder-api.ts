@@ -19,9 +19,9 @@ const folderApi = baseApi.injectEndpoints({
     }),
     //update folder:
     updateFolder: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/gallery/update-folder/${id}`,
-        method: "PUT",
+      query: ({ _id, ...data }) => ({
+        url: `/gallery/update-folder/${_id}`,
+        method: "PATCH",
         body: data,
       }),
     }),

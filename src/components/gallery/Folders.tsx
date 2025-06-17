@@ -9,96 +9,93 @@ import {
   Button,
   Typography,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Edit } from "@mui/icons-material";
 import { Search } from "lucide-react";
+import image1 from "../../assets/mount-a-folder-as-a-drive.webp";
+import ReusableModal from "../../shared/ReusableModal";
 import ReusableForm from "../../shared/ReusableFrom";
 import TextInput from "../utils/input-fields/TextInput";
-import image1 from "../../assets/mount-a-folder-as-a-drive.webp";
-import type { FieldValue } from "react-hook-form";
+import Empty from "../../shared/Empty";
 import {
   useCreateFolderMutation,
   useDeleteFolderMutation,
   useGetFoldersQuery,
-  // useUpdateFolderMutation,
+  useUpdateFolderMutation,
 } from "../../redux/features/gallery/folder-api";
 import { useToast } from "../utils/tost-alert/ToastProvider";
-import Loader from "../../shared/Loader";
-import Empty from "../../shared/Empty";
-
-type FolderItem = {
-  _id: string;
-  name: string;
-  image: typeof image1;
-};
+import type { FieldValue } from "react-hook-form";
+import type { TFolder } from "./TGallery";
 
 const Folders = () => {
-  const [search, setSearch] = useState("");
-  const {
-    data: foldersData,
-    isFetching,
-    refetch,
-  } = useGetFoldersQuery({ search: search || "" });
-  const [createFolder, { isLoading }] = useCreateFolderMutation();
-  const [deleteFolder, { isLoading: isDeleting }] = useDeleteFolderMutation();
-  // const [updateFolder, { isLoading: isUpdating }] = useUpdateFolderMutation();
-  const { showToast } = useToast();
   const theme = useTheme();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFolder, setSelectedFolder] = useState<TFolder | null>(null);
 
-  console.log(foldersData);
-  console.log(search);
+  const { data: foldersData, refetch } = useGetFoldersQuery({
+    search: searchTerm,
+  });
+  const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
+  const [deleteFolder, { isLoading: isDeleting }] = useDeleteFolderMutation();
+  const [updateFolder, { isLoading: isUpdating }] = useUpdateFolderMutation();
+  const { showToast } = useToast();
 
-  // Handle folder deletion:
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await deleteFolder(id);
-      if (res.data.success) {
-        showToast({
-          message: res.data?.message,
-          duration: 2000,
-          position: {
-            horizontal: "right",
-            vertical: "top",
-          },
-          type: "success",
-        });
-        refetch();
-      }
-    } catch {
-      showToast({
-        message: "Failed to delete folder",
-        duration: 2000,
-        position: {
-          horizontal: "right",
-          vertical: "top",
-        },
-        type: "error",
-      });
-    }
-  };
-
-  // Handle folder creation:
   const handleCreate = async (data: FieldValue<any>) => {
     try {
       const res = await createFolder({ name: data.folderName });
       if (res.data.success) {
+        showToast({ message: res.data.message, type: "success" });
+        refetch();
+        setCreateOpen(false);
+      }
+    } catch {
+      showToast({ message: "Failed to create folder", type: "error" });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteFolder(id);
+      if (res.data.success) {
+        showToast({ message: res.data.message, type: "success" });
+        refetch();
+      }
+    } catch {
+      showToast({ message: "Failed to delete folder", type: "error" });
+    }
+  };
+
+  const handleEdit = async (folder: FieldValue<TFolder>) => {
+    try {
+      const updateFolderData: TFolder = {
+        _id: selectedFolder?._id || "",
+        name: (folder as { folderName: string }).folderName || "",
+      };
+
+      const res = await updateFolder(updateFolderData);
+      if (res.data.success) {
         showToast({
-          message: res?.data?.message,
+          message: res?.data?.message || "Folder updated successfully",
           duration: 2000,
           position: {
-            horizontal: "right",
+            horizontal: "center",
             vertical: "top",
           },
           type: "success",
         });
-        refetch();
       }
+      setEditOpen(false);
+      refetch();
     } catch {
       showToast({
-        message: "Failed to create folder",
+        message: "Something wrong",
         duration: 2000,
         position: {
-          horizontal: "right",
+          horizontal: "center",
           vertical: "top",
         },
         type: "error",
@@ -106,19 +103,15 @@ const Folders = () => {
     }
   };
 
-  // Show loader while creating folder
-  // if (isFetching) return <Loader />;
-
   return (
-    <Paper sx={{ p: 2, marginY: 2 }}>
+    <Paper sx={{ p: 3, my: 3 }}>
       <Grid container spacing={2} alignItems="center">
-        {/* Search */}
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <OutlinedInput
             fullWidth
             placeholder="Search folders"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton>
@@ -128,76 +121,175 @@ const Folders = () => {
             }
           />
         </Grid>
-
-        {/* Create Folder Form */}
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <ReusableForm onSubmit={handleCreate}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid size={{ xs: 8, md: 10 }}>
-                <TextInput
-                  name="folderName"
-                  label="Folder Name"
-                  placeholder="Enter folder name"
-                  required
-                />
-              </Grid>
-              <Grid size={{ xs: 4, md: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  color="primary"
-                  fullWidth
-                  type="submit"
-                >
-                  Create
-                </Button>
-              </Grid>
-            </Grid>
-          </ReusableForm>
+        <Grid size={{ xs: 12, md: 6 }} textAlign="right">
+          <Button variant="contained" onClick={() => setCreateOpen(true)}>
+            + Create Folder
+          </Button>
         </Grid>
       </Grid>
 
-      <Box sx={{ my: 2, borderBottom: `1px solid ${theme.palette.divider}` }} />
+      <Box mt={3} mb={2} borderBottom={`1px solid ${theme.palette.divider}`} />
+
       {/* Folder Grid */}
       {foldersData?.data?.result?.length ? (
         <Grid container spacing={2}>
-          {foldersData.data.result.map((folder: FolderItem) => (
-            <Grid size={{ xs: 6, sm: 6, md: 2 }} key={folder._id}>
+          {foldersData.data.result.map((folder: TFolder) => (
+            <Grid size={{ xs: 6, md: 2 }} key={folder._id}>
               <Paper
                 sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
                   position: "relative",
+                  overflow: "hidden",
+                  textAlign: "center",
+                  borderRadius: 2,
+                  p: 1,
+                  transition: "0.3s",
+                  "&:hover .overlay": {
+                    opacity: 0.6,
+                  },
+                  "&:hover .folder-actions": {
+                    opacity: 1,
+                    visibility: "visible",
+                  },
                 }}
               >
+                {/* Folder Image */}
                 <img
                   src={image1}
-                  alt={folder?.name}
-                  style={{ width: "100%", height: "auto" }}
+                  alt={folder.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: 8,
+                  }}
                 />
-                <Typography variant="h6" sx={{ mt: 1 }}>
+
+                {/* Folder Name */}
+                <Typography variant="h6" mt={1}>
                   {folder.name}
                 </Typography>
-                <IconButton
-                  onClick={() => handleDelete(folder._id)}
+
+                {/* Dark Overlay on Hover */}
+                <Box
+                  className="overlay"
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "#000",
+                    opacity: 0,
+                    transition: "0.3s",
+                    zIndex: 1,
+                    borderRadius: 2,
+                  }}
+                />
+
+                {/* Action Icons */}
+                <Box
+                  className="folder-actions"
                   sx={{
                     position: "absolute",
                     top: 8,
                     right: 8,
-                    color: theme.palette.error.main,
+                    display: "flex",
+                    gap: 1,
+                    opacity: 0,
+                    visibility: "hidden",
+                    zIndex: 2,
+                    transition: "0.3s",
                   }}
                 >
-                  {isDeleting ? <Loader /> : <DeleteIcon />}
-                </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setSelectedFolder(folder);
+                      setEditOpen(true);
+                    }}
+                    sx={{ color: "white", backgroundColor: "rgba(0,0,0,0.5)" }}
+                  >
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(folder._id)}
+                    sx={{ color: "white", backgroundColor: "rgba(0,0,0,0.5)" }}
+                  >
+                    {isDeleting ? (
+                      <CircularProgress size={24} sx={{ color: "white" }} />
+                    ) : (
+                      <DeleteIcon />
+                    )}
+                  </IconButton>
+                </Box>
               </Paper>
             </Grid>
           ))}
         </Grid>
       ) : (
-        <Empty heading=" No folders found." refetch={refetch} />
+        <Empty heading="No folders found." refetch={refetch} />
       )}
+
+      {/* Create Modal */}
+      <ReusableModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        width={600}
+      >
+        <Typography variant="h6" mb={2}>
+          Create New Folder
+        </Typography>
+        <ReusableForm onSubmit={handleCreate}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextInput name="folderName" label="Folder Name" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                disabled={isCreating}
+              >
+                {isCreating ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Create"
+                )}
+              </Button>
+            </Grid>
+          </Grid>
+        </ReusableForm>
+      </ReusableModal>
+
+      {/* Edit Modal */}
+      <ReusableModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        width={600}
+      >
+        <Typography variant="h6" mb={2}>
+          Edit Folder
+        </Typography>
+        <ReusableForm
+          onSubmit={handleEdit}
+          defaultValues={{ folderName: selectedFolder?.name }}
+        >
+          <Grid container spacing={2} alignItems="center">
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextInput name="folderName" label="Folder Name" required />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Button variant="contained" type="submit" fullWidth>
+                {isUpdating ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Update"
+                )}
+              </Button>
+            </Grid>
+          </Grid>
+        </ReusableForm>
+      </ReusableModal>
     </Paper>
   );
 };
