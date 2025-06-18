@@ -36,7 +36,7 @@ interface TableProps {
   updatePath: string;
   viewPath: string;
   createPath: string;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const DataTable: React.FC<TableProps> = ({
@@ -79,28 +79,30 @@ const DataTable: React.FC<TableProps> = ({
     renderCell: (params: GridRenderCellParams<any, RowData>) => (
       <>
         <IconButton
-          onClick={(e) => handleMenuOpen(e, params.row._id)}
+          onClick={(e) => handleMenuOpen(e, params?.row?._id)}
           size="small"
         >
           <MoreVertIcon />
         </IconButton>
         <Menu
           anchorEl={menuAnchor}
-          open={Boolean(menuAnchor) && selectedRowId === params.row._id}
+          open={Boolean(menuAnchor) && selectedRowId === params?.row?._id}
           onClose={handleMenuClose}
         >
+          {onDelete && (
+            <MenuItem
+              onClick={() => {
+                onDelete?.(params?.row?._id);
+                handleMenuClose();
+              }}
+              sx={{ color: "error.main" }}
+            >
+              <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
+            </MenuItem>
+          )}
           <MenuItem
             onClick={() => {
-              onDelete(params.row._id);
-              handleMenuClose();
-            }}
-            sx={{ color: "error.main" }}
-          >
-            <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              navigate(`${updatePath}/${params.row._id}`);
+              navigate(`${updatePath}/${params?.row?._id}`);
               handleMenuClose();
             }}
             sx={{ color: "primary.main" }}
@@ -109,7 +111,7 @@ const DataTable: React.FC<TableProps> = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              navigate(`${viewPath}/${params.row._id}`);
+              navigate(`${viewPath}/${params?.row?.slug}`);
               handleMenuClose();
             }}
             sx={{ color: "primary.main" }}
@@ -177,7 +179,6 @@ const DataTable: React.FC<TableProps> = ({
       <DataGrid
         rows={filteredRows}
         columns={[...columns, actionColumn]}
-        autoHeight
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection
         getRowId={(row) => row._id}

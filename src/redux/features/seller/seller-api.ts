@@ -10,7 +10,52 @@ const sellerApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    //update seller:
+    updateSeller: builder.mutation({
+      query: (_id, ...data) => ({
+        url: `/seller/update-seller/${_id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    //delete seller:
+    deleteSeller: builder.mutation({
+      query: (_id: string) => ({
+        url: `/seller/update-seller/${_id}`,
+        method: "DELETE",
+      }),
+    }),
+
+    //get all seller:
+    allSeller: builder.query({
+      query: () => ({
+        url: "/seller/all-seller",
+        method: "GET",
+      }),
+    }),
+
+    //get single by id:
+    getSellerById: builder.query({
+      query: (_id: string) => ({
+        url: `/seller/single-seller/${_id}`,
+        method: "GET",
+      }),
+    }),
+    //get single  seller:
+    singleSeller: builder.query({
+      query: (slug: string) => ({
+        url: `/seller/single-seller/${slug}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useCreateSellerMutation } = sellerApi;
+export const {
+  useCreateSellerMutation,
+  useUpdateSellerMutation,
+  useDeleteSellerMutation,
+  useAllSellerQuery,
+  useSingleSellerQuery,
+  useGetSellerByIdQuery,
+} = sellerApi;

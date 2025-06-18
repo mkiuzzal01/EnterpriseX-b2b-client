@@ -1,6 +1,6 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useEffect, useState } from "react";
-import { Box, Button, Paper, Grid, Drawer } from "@mui/material";
+import { Box, Button, Paper, Grid, CircularProgress } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
 import TextInput from "../../utils/input-fields/TextInput";
@@ -17,13 +17,18 @@ import Loader from "../../../shared/Loader";
 import type { FieldValues } from "react-hook-form";
 import ReusableDrawer from "../../../shared/ReusableDrawer";
 import Images from "../../gallery/Images";
+import { useAppSelector } from "../../../redux/hooks";
+import { useGetImageByIdQuery } from "../../../redux/features/gallery/image-api";
 
 const CreateUser = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectImage, setSelectImage] = useState("");
   const [addSeller, { isLoading }] = useCreateSellerMutation();
-  const [addStakeHolder, { isLoading: isFacing }] =
+  const [addStakeHolder, { isLoading: isCreating }] =
     useCreateStakeHolderMutation();
+  const selectedId = useAppSelector((state) => state.selectedId.selectedId);
+  const { data: image, isLoading: isComing } = useGetImageByIdQuery(
+    selectedId || null
+  );
   const [role, setRole] = useState<string>("");
   const [isSeller, setIsSeller] = useState<boolean>(false);
   const { showToast } = useToast();
@@ -34,7 +39,6 @@ const CreateUser = () => {
 
   const onSubmit = async (data: FieldValues) => {
     try {
-      if (isFacing || isLoading) return <Loader />;
       let res;
       if (role === "admin") {
         const stakeHolder = {
@@ -49,9 +53,9 @@ const CreateUser = () => {
             gender: data?.gender,
             dateOfJoining: data?.dateOfJoining,
             address: data?.address,
+            profileImage: image?.data?.photo,
           },
         };
-
         res = await addStakeHolder(stakeHolder);
       } else if (role === "seller") {
         const seller = {
@@ -67,13 +71,12 @@ const CreateUser = () => {
             dateOfJoining: data?.dateOfJoining,
             address: data?.address,
             bankAccountInfo: data?.bankAccountInfo,
+            profileImage: image?.data?.photo,
           },
         };
-
-        console.log(seller);
-        // res = await addSeller(seller);
+        res = await addSeller(seller);
       }
-      if (res?.data.success) {
+      if (res?.data?.success) {
         setRole("");
         showToast({
           message: res.data.message,
@@ -108,17 +111,88 @@ const CreateUser = () => {
           />
 
           {/* image */}
-          <Box>
-            <Button onClick={() => setDrawerOpen(true)}>Add image</Button>
+          <Box sx={{ mb: 4 }}>
+            <SectionHeader
+              icon={<FaUser />}
+              title="User Photo"
+              subtitle="Upload or select a profile image"
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
+              {/* Preview */}
+              <Box
+                sx={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: "1px solid #ddd",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                {isComing ? (
+                  <Loader />
+                ) : selectedId && image?.data?.photo?.url ? (
+                  <img
+                    src={image.data.photo.url}
+                    alt={image?.data?.photoName || "Selected Image"}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      color: "#888",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    No Image
+                  </Box>
+                )}
+              </Box>
+
+              {/* Image Details */}
+              {image?.data?.photoName && (
+                <Box sx={{ flexGrow: 1 }}>
+                  <Box fontWeight={500}>{image.data.photoName}</Box>
+                </Box>
+              )}
+
+              {/* Add or Change Button */}
+              <Box>
+                <Button
+                  variant="outlined"
+                  onClick={() => setDrawerOpen(true)}
+                  sx={{ textTransform: "none" }}
+                >
+                  {selectedId ? "Change Image" : "Add Image"}
+                </Button>
+              </Box>
+            </Box>
+
             <ReusableDrawer
-              width={"50%"}
+              width="50%"
               open={drawerOpen}
               onClose={() => {
                 setDrawerOpen(false);
                 return true;
               }}
             >
-              <Images onClick={setSelectImage} clicks={selectImage} />
+              <Images />
             </ReusableDrawer>
           </Box>
 
@@ -271,7 +345,11 @@ const CreateUser = () => {
                 size="large"
                 sx={{ py: 1.5 }}
               >
-                Create Account
+                {isCreating || isLoading ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </Grid>
           </Grid>

@@ -21,12 +21,7 @@ import { useGetImagesQuery } from "../../redux/features/gallery/image-api";
 import ReusableDrawer from "../../shared/ReusableDrawer";
 import AddMultipleImages from "../utils/gallery/AddImage";
 
-type Props = {
-  onClick?: (id: string) => void;
-  clicks?: number;
-};
-
-export default function Images({ onClick, clicks }: Props) {
+export default function Images() {
   const [open, setOpen] = useState<boolean>(false);
   const { data: foldersData, isFetching } = useGetFoldersQuery({});
   const [folderId, setFolderId] = useState<string>("");
@@ -62,7 +57,7 @@ export default function Images({ onClick, clicks }: Props) {
             <MenuItem value="">
               <em>Select folder</em>
             </MenuItem>
-            {foldersData.data?.result?.map((folder: TFolder) => (
+            {foldersData?.data?.result?.map((folder: TFolder) => (
               <MenuItem key={folder._id} value={folder._id}>
                 {folder.name}
               </MenuItem>
@@ -123,8 +118,6 @@ export default function Images({ onClick, clicks }: Props) {
       {/* load all image  from database  */}
       <AllImage
         refetch={refetch}
-        clicks={clicks}
-        onClick={onClick}
         imagesData={imagesData?.data?.result}
       />
     </Paper>

@@ -23,6 +23,7 @@ import Login from "../components/pages/Login";
 import App from "../layout/App";
 import Folder from "../components/gallery/Folders";
 import NotFound from "../components/pages/NotFound";
+import ViewUser from "../components/pages/users/ViewUser";
 
 export const route = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ export const route = createBrowserRouter([
       { path: "profile", Component: Profile },
       { path: "create-user", Component: CreateUser },
       { path: "all-users", Component: AllUsers },
+      { path: "view-user/:data", Component: ViewUser },
       { path: "create-product", Component: CreateProduct },
       { path: "all-product", Component: AllProduct },
       { path: "create-variant", Component: CreateVariant },

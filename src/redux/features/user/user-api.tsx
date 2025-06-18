@@ -2,6 +2,14 @@ import { baseApi } from "../../api/baseApi";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    //update user:
+    updateUser: builder.mutation({
+      query: ({ _id, ...data }) => ({
+        url: `/user/update-user/${_id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
     //get all users:
     allUsers: builder.query({
       query: () => ({
@@ -12,8 +20,8 @@ const userApi = baseApi.injectEndpoints({
 
     //this is single users:
     singleUser: builder.query({
-      query: (id: string) => ({
-        url: `/user/single-user/${id}`,
+      query: (slug: string) => ({
+        url: `/user/single-user/${slug}`,
         method: "GET",
       }),
     }),
