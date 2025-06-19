@@ -102,7 +102,7 @@ const DataTable: React.FC<TableProps> = ({
           )}
           <MenuItem
             onClick={() => {
-              navigate(`${updatePath}/${params?.row?._id}`);
+              navigate(`${updatePath}/${params?.row?.slug}`);
               handleMenuClose();
             }}
             sx={{ color: "primary.main" }}

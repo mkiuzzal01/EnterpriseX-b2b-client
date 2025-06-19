@@ -38,7 +38,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   }
   if (result?.error?.status === 401) {
 
-    console.log("Sending refresh token");
 
     const res = await fetch(
       `${import.meta.env.VITE_REACT_APP_BASE_URL}/auth/refresh-token`,

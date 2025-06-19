@@ -18,14 +18,25 @@ const userApi = baseApi.injectEndpoints({
       }),
     }),
 
-    //this is single users:
-    singleUser: builder.query({
+    //this is single users by slug:
+    singleUserBySlug: builder.query({
       query: (slug: string) => ({
-        url: `/user/single-user/${slug}`,
+        url: `/user/single-user-with-slug/${slug}`,
+        method: "GET",
+      }),
+    }),
+    //this is single users by id:
+    singleUserById: builder.query({
+      query: (id: string) => ({
+        url: `/user/single-user-with-id/${id}`,
         method: "GET",
       }),
     }),
   }),
 });
 
-export const { useAllUsersQuery, useSingleUserQuery } = userApi;
+export const {
+  useAllUsersQuery,
+  useSingleUserByIdQuery,
+  useSingleUserBySlugQuery,
+} = userApi;

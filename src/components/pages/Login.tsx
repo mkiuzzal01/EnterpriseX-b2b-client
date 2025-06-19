@@ -23,7 +23,6 @@ const Login = () => {
   if (isLoading) return <Loader />;
 
   const onSubmit = async (data: FormValues) => {
-    console.log(data);
     try {
       const res = await login(data).unwrap();
       const user = verifyToken(res.data.accessToken) as TUser;

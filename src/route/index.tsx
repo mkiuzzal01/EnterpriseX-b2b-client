@@ -24,6 +24,7 @@ import App from "../layout/App";
 import Folder from "../components/gallery/Folders";
 import NotFound from "../components/pages/NotFound";
 import ViewUser from "../components/pages/users/ViewUser";
+import UpdateUser from "../components/pages/users/UpdateUser";
 
 export const route = createBrowserRouter([
   {
@@ -34,7 +35,8 @@ export const route = createBrowserRouter([
       { path: "profile", Component: Profile },
       { path: "create-user", Component: CreateUser },
       { path: "all-users", Component: AllUsers },
-      { path: "view-user/:data", Component: ViewUser },
+      { path: "view-user/:slug", Component: ViewUser },
+      { path: "update-user/:slug", Component: UpdateUser },
       { path: "create-product", Component: CreateProduct },
       { path: "all-product", Component: AllProduct },
       { path: "create-variant", Component: CreateVariant },
