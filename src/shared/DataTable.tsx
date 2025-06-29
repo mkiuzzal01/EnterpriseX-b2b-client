@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, type ChangeEvent, type MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -26,7 +25,8 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 interface RowData {
   _id: string;
-  [key: string]: any;
+  slug?: string;
+  [key: string]: unknown;
 }
 
 interface TableProps {
@@ -37,6 +37,10 @@ interface TableProps {
   viewPath: string;
   createPath: string;
   onDelete?: (id: string) => void;
+  setSearch?: (value: string) => void;
+  search?: string;
+  setFilter?: (value: string) => void;
+  filter?: string;
 }
 
 const DataTable: React.FC<TableProps> = ({
@@ -47,12 +51,14 @@ const DataTable: React.FC<TableProps> = ({
   viewPath,
   createPath,
   onDelete,
+  setSearch,
+  search = "",
+  setFilter,
+  filter = "",
 }) => {
   const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCriteria, setFilterCriteria] = useState("");
 
   const handleMenuOpen = (e: MouseEvent<HTMLButtonElement>, id: string) => {
     setMenuAnchor(e.currentTarget);
@@ -66,7 +72,7 @@ const DataTable: React.FC<TableProps> = ({
 
   const filteredRows: GridRowsProp = rows.filter((row) =>
     Object.values(row).some((value) =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      value?.toString().toLowerCase().includes(search.toLowerCase())
     )
   );
 
@@ -79,20 +85,20 @@ const DataTable: React.FC<TableProps> = ({
     renderCell: (params: GridRenderCellParams<any, RowData>) => (
       <>
         <IconButton
-          onClick={(e) => handleMenuOpen(e, params?.row?._id)}
+          onClick={(e) => handleMenuOpen(e, params.row._id)}
           size="small"
         >
           <MoreVertIcon />
         </IconButton>
         <Menu
           anchorEl={menuAnchor}
-          open={Boolean(menuAnchor) && selectedRowId === params?.row?._id}
+          open={Boolean(menuAnchor) && selectedRowId === params.row._id}
           onClose={handleMenuClose}
         >
           {onDelete && (
             <MenuItem
               onClick={() => {
-                onDelete?.(params?.row?._id);
+                onDelete(params.row._id);
                 handleMenuClose();
               }}
               sx={{ color: "error.main" }}
@@ -102,7 +108,7 @@ const DataTable: React.FC<TableProps> = ({
           )}
           <MenuItem
             onClick={() => {
-              navigate(`${updatePath}/${params?.row?.slug}`);
+              navigate(`${updatePath}/${params.row.slug ?? params.row._id}`);
               handleMenuClose();
             }}
             sx={{ color: "primary.main" }}
@@ -111,7 +117,7 @@ const DataTable: React.FC<TableProps> = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              navigate(`${viewPath}/${params?.row?.slug}`);
+              navigate(`${viewPath}/${params.row.slug ?? params.row._id}`);
               handleMenuClose();
             }}
             sx={{ color: "primary.main" }}
@@ -124,7 +130,7 @@ const DataTable: React.FC<TableProps> = ({
   };
 
   return (
-    <Box sx={{ width: "100%", p: 3, borderRadius: 1, boxShadow: 2 }}>
+    <Box>
       <Typography
         variant="h5"
         sx={{ mb: 2, fontWeight: 600, textAlign: "center" }}
@@ -133,7 +139,7 @@ const DataTable: React.FC<TableProps> = ({
       </Typography>
 
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xl: 12, md: 4 }}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Fab
               size="small"
@@ -151,26 +157,26 @@ const DataTable: React.FC<TableProps> = ({
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 5 }}>
+        <Grid size={{ xl: 12, md: 4 }}>
           <TextField
             label="Search"
             fullWidth
             variant="outlined"
-            value={searchTerm}
+            value={search}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSearchTerm(e.target.value)
+              setSearch?.(e.target.value)
             }
           />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xl: 12, md: 4 }}>
           <TextField
-            label="Filter"
+            label="Filter (optional)"
             fullWidth
             variant="outlined"
-            value={filterCriteria}
+            value={filter}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setFilterCriteria(e.target.value)
+              setFilter?.(e.target.value)
             }
           />
         </Grid>
@@ -180,8 +186,8 @@ const DataTable: React.FC<TableProps> = ({
         rows={filteredRows}
         columns={[...columns, actionColumn]}
         pageSizeOptions={[5, 10, 20]}
-        checkboxSelection
         getRowId={(row) => row._id}
+        autoHeight
         disableRowSelectionOnClick
       />
     </Box>

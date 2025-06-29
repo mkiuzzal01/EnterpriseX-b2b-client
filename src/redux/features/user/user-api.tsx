@@ -2,20 +2,15 @@ import { baseApi } from "../../api/baseApi";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    //update user:
-    updateUser: builder.mutation({
-      query: ({ _id, ...data }) => ({
-        url: `/user/update-user/${_id}`,
-        method: "PATCH",
-        body: data,
-      }),
-    }),
     //get all users:
     allUsers: builder.query({
-      query: () => ({
-        url: "/user/all-user",
-        method: "GET",
-      }),
+      query: (queryParams: Record<string, any>) => {
+        const queryString = new URLSearchParams(queryParams).toString();
+        return {
+          url: `/user/all-user?${queryString}`,
+          method: "GET",
+        };
+      },
     }),
 
     //this is single users by slug:
@@ -32,6 +27,14 @@ const userApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    //update user
+    updateUser: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/user/update-user/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -39,4 +42,5 @@ export const {
   useAllUsersQuery,
   useSingleUserByIdQuery,
   useSingleUserBySlugQuery,
+  useUpdateUserMutation,
 } = userApi;

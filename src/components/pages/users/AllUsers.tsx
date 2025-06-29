@@ -1,24 +1,10 @@
-import { Avatar, Box } from "@mui/material";
-import DataTable from "../../../shared/DataTable";
-import Loader from "../../../shared/Loader";
-import { useToast } from "../../utils/tost-alert/ToastProvider";
+import { Box } from "@mui/material";
+import { useState } from "react";
 import { useAllUsersQuery } from "../../../redux/features/user/user-api";
+import Loader from "../../../shared/Loader";
+import DataTable from "../../../shared/DataTable";
 
 const userColumns = [
-  {
-    field: "image",
-    headerName: "Image",
-    width: 100,
-    sortable: false,
-    filterable: false,
-    renderCell: () => (
-      <Avatar
-        alt="User"
-        src="/default-avatar.png"
-        sx={{ width: 40, height: 40 }}
-      />
-    ),
-  },
   { field: "email", headerName: "Email", width: 200 },
   { field: "role", headerName: "Role", width: 150 },
   { field: "status", headerName: "Status", width: 120 },
@@ -26,20 +12,41 @@ const userColumns = [
 ];
 
 const AllUsers = () => {
-  const { showToast } = useToast();
-  const { data: users = [], isLoading } = useAllUsersQuery(undefined);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
+  const { data, isLoading } = useAllUsersQuery({
+    searchTerm,
+    role: roleFilter,
+    page,
+    limit,
+    sort: "-createdAt",
+  });
+
+
+  console.log(data);
   if (isLoading) return <Loader />;
 
   return (
     <Box p={3}>
       <DataTable
         title="All Users"
-        rows={users?.data}
+        rows={data?.data?.result || []}
         columns={userColumns}
+        meta={data?.meta}
         updatePath="/update-user"
         createPath="/create-user"
         viewPath="/view-user"
+        search={searchTerm}
+        setSearch={setSearchTerm}
+        filter={roleFilter}
+        setFilter={setRoleFilter}
+        page={page}
+        setPage={setPage}
+        limit={limit}
+        setLimit={setLimit}
       />
     </Box>
   );

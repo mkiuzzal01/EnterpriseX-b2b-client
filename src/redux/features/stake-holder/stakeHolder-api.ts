@@ -14,8 +14,8 @@ const stakeHolderApi = baseApi.injectEndpoints({
 
     //update stack holder:
     updateStackHolder: builder.mutation({
-      query: ({ _id, ...data }) => ({
-        url: `/stakeholder/update-stakeholder/${_id}`,
+      query: ({ id, ...data }) => ({
+        url: `/stakeholder/update-stakeholder/${id}`,
         method: "PATCH",
         body: data,
       }),

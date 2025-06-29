@@ -12,10 +12,10 @@ const sellerApi = baseApi.injectEndpoints({
     }),
     //update seller:
     updateSeller: builder.mutation({
-      query: (_id, ...data) => ({
-        url: `/seller/update-seller/${_id}`,
+      query: ({ id, ...seller }) => ({
+        url: `/seller/update-seller/${id}`,
         method: "PATCH",
-        body: data,
+        body: seller,
       }),
     }),
     //delete seller:
