@@ -5,7 +5,7 @@ import type { SubmitHandler } from "react-hook-form";
 
 type FormProps = {
   children: React.ReactNode;
-  onSubmit: SubmitHandler<any>;
+  onSubmit?: SubmitHandler<any>;
   defaultValues?: Record<string, any>;
 };
 
@@ -15,7 +15,7 @@ const ReusableForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)}>{children}</form>
+      <form onSubmit={handleSubmit(onSubmit ?? (() => {}))}>{children}</form>
     </FormProvider>
   );
 };

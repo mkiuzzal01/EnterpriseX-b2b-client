@@ -4,7 +4,6 @@ import {
   DataGrid,
   type GridColDef,
   type GridRenderCellParams,
-  type GridRowsProp,
 } from "@mui/x-data-grid";
 import {
   Box,
@@ -22,11 +21,19 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import SelectInputField from "../components/utils/input-fields/SelectInputField";
+import ReusableForm from "./ReusableFrom";
 
 interface RowData {
   _id: string;
   slug?: string;
   [key: string]: unknown;
+}
+
+interface Meta {
+  total: number;
+  page: number;
+  limit: number;
 }
 
 interface TableProps {
@@ -41,6 +48,11 @@ interface TableProps {
   search?: string;
   setFilter?: (value: string) => void;
   filter?: string;
+  page: number;
+  setPage: (value: number) => void;
+  limit: number;
+  setLimit: (value: number) => void;
+  meta?: Meta;
 }
 
 const DataTable: React.FC<TableProps> = ({
@@ -54,7 +66,11 @@ const DataTable: React.FC<TableProps> = ({
   setSearch,
   search = "",
   setFilter,
-  filter = "",
+  page,
+  setPage,
+  limit,
+  setLimit,
+  meta,
 }) => {
   const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -69,12 +85,6 @@ const DataTable: React.FC<TableProps> = ({
     setMenuAnchor(null);
     setSelectedRowId(null);
   };
-
-  const filteredRows: GridRowsProp = rows.filter((row) =>
-    Object.values(row).some((value) =>
-      value?.toString().toLowerCase().includes(search.toLowerCase())
-    )
-  );
 
   const actionColumn: GridColDef = {
     field: "actions",
@@ -139,7 +149,7 @@ const DataTable: React.FC<TableProps> = ({
       </Typography>
 
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid size={{ xl: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 2 }}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Fab
               size="small"
@@ -157,38 +167,50 @@ const DataTable: React.FC<TableProps> = ({
           </Box>
         </Grid>
 
-        <Grid size={{ xl: 12, md: 4 }}>
-          <TextField
-            label="Search"
-            fullWidth
-            variant="outlined"
-            value={search}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSearch?.(e.target.value)
-            }
-          />
-        </Grid>
-
-        <Grid size={{ xl: 12, md: 4 }}>
-          <TextField
-            label="Filter (optional)"
-            fullWidth
-            variant="outlined"
-            value={filter}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setFilter?.(e.target.value)
-            }
-          />
+        <Grid size={{ xs: 12, md: 10 }}>
+          <ReusableForm>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  label="Search"
+                  fullWidth
+                  variant="outlined"
+                  value={search}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setSearch?.(e.target.value)
+                  }
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <SelectInputField
+                  label="Filter by status"
+                  name="status"
+                  options={["active", "inactive", "blocked", "leaved"]}
+                  onChange={(value: string) => setFilter?.(value)}
+                />
+              </Grid>
+            </Grid>
+          </ReusableForm>
         </Grid>
       </Grid>
 
       <DataGrid
-        rows={filteredRows}
+        rows={rows}
         columns={[...columns, actionColumn]}
-        pageSizeOptions={[5, 10, 20]}
         getRowId={(row) => row._id}
         autoHeight
         disableRowSelectionOnClick
+        paginationMode="server"
+        rowCount={meta?.total || 0}
+        paginationModel={{ page: page - 1, pageSize: limit }}
+        onPaginationModelChange={({ page: newPage, pageSize: newLimit }) => {
+          setPage(newPage + 1);
+          if (newLimit !== limit) {
+            setLimit(newLimit);
+            setPage(1);
+          }
+        }}
+        pageSizeOptions={[5, 10, 20, 50, 100]}
       />
     </Box>
   );
