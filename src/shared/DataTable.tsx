@@ -1,3 +1,4 @@
+// DataTable.tsx (Reusable Component)
 import React, { useState, type ChangeEvent, type MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -40,14 +41,15 @@ interface TableProps {
   rows: RowData[];
   columns: GridColDef[];
   title?: string;
-  updatePath: string;
-  viewPath: string;
+  updatePath?: string;
+  viewPath?: string;
   createPath: string;
   onDelete?: (id: string) => void;
   setSearch?: (value: string) => void;
   search?: string;
   setFilter?: (value: string) => void;
   filter?: string;
+  options?: string[];
   page?: number;
   setPage?: (value: number) => void;
   limit?: number;
@@ -67,6 +69,7 @@ const DataTable: React.FC<TableProps> = ({
   search = "",
   setFilter,
   page,
+  options,
   setPage,
   limit,
   setLimit,
@@ -95,20 +98,47 @@ const DataTable: React.FC<TableProps> = ({
     renderCell: (params: GridRenderCellParams<any, RowData>) => (
       <>
         <IconButton
-          onClick={(e) => handleMenuOpen(e, params.row._id)}
+          onClick={(e) => handleMenuOpen(e, params?.row?._id)}
           size="small"
         >
           <MoreVertIcon />
         </IconButton>
         <Menu
           anchorEl={menuAnchor}
-          open={Boolean(menuAnchor) && selectedRowId === params.row._id}
+          open={Boolean(menuAnchor) && selectedRowId === params?.row?._id}
           onClose={handleMenuClose}
         >
+          {viewPath && (
+            <MenuItem
+              onClick={() => {
+                navigate(
+                  `${viewPath}/${params?.row?.slug ?? params?.row?._id}`
+                );
+                handleMenuClose();
+              }}
+              sx={{ color: "primary.main" }}
+            >
+              <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} /> View
+            </MenuItem>
+          )}
+          {updatePath && (
+            <MenuItem
+              onClick={() => {
+                navigate(
+                  `${updatePath}/${params?.row?.slug ?? params?.row?._id}`
+                );
+                handleMenuClose();
+              }}
+              sx={{ color: "primary.main" }}
+            >
+              <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+            </MenuItem>
+          )}
+
           {onDelete && (
             <MenuItem
               onClick={() => {
-                onDelete(params.row._id);
+                onDelete(params?.row?._id);
                 handleMenuClose();
               }}
               sx={{ color: "error.main" }}
@@ -116,24 +146,6 @@ const DataTable: React.FC<TableProps> = ({
               <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
             </MenuItem>
           )}
-          <MenuItem
-            onClick={() => {
-              navigate(`${updatePath}/${params.row.slug ?? params.row._id}`);
-              handleMenuClose();
-            }}
-            sx={{ color: "primary.main" }}
-          >
-            <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              navigate(`${viewPath}/${params.row.slug ?? params.row._id}`);
-              handleMenuClose();
-            }}
-            sx={{ color: "primary.main" }}
-          >
-            <RemoveRedEyeIcon fontSize="small" sx={{ mr: 1 }} /> View
-          </MenuItem>
         </Menu>
       </>
     ),
@@ -149,7 +161,12 @@ const DataTable: React.FC<TableProps> = ({
       </Typography>
 
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid size={{ xs: 12, md: 2 }}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 2,
+          }}
+        >
           <Box sx={{ display: "flex", gap: 2 }}>
             <Fab
               size="small"
@@ -167,31 +184,52 @@ const DataTable: React.FC<TableProps> = ({
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 10 }}>
-          <ReusableForm>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  label="Search"
-                  fullWidth
-                  variant="outlined"
-                  value={search}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setSearch?.(e.target.value)
-                  }
-                />
+        {(setSearch || setFilter) && (
+          <Grid
+            size={{
+              xs: 12,
+              md: 10,
+            }}
+          >
+            <ReusableForm>
+              <Grid container spacing={2}>
+                {setSearch && (
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: options ? 6 : 12,
+                    }}
+                  >
+                    <TextField
+                      label="Search"
+                      fullWidth
+                      variant="outlined"
+                      value={search}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setSearch(e.target.value)
+                      }
+                    />
+                  </Grid>
+                )}
+                {options && (
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: setSearch ? 6 : 12,
+                    }}
+                  >
+                    <SelectInputField
+                      label="Filter by status"
+                      name="status"
+                      options={options}
+                      onChange={(value: string) => setFilter?.(value)}
+                    />
+                  </Grid>
+                )}
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <SelectInputField
-                  label="Filter by status"
-                  name="status"
-                  options={["active", "inactive", "blocked", "leaved"]}
-                  onChange={(value: string) => setFilter?.(value)}
-                />
-              </Grid>
-            </Grid>
-          </ReusableForm>
-        </Grid>
+            </ReusableForm>
+          </Grid>
+        )}
       </Grid>
 
       <DataGrid

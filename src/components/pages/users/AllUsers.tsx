@@ -13,13 +13,9 @@ const userColumns = [
     width: 100,
     sortable: false,
     filterable: false,
-    renderCell: (params: any) => (
+    renderCell: () => (
       <Fab size="small" color="primary">
-        <Avatar
-          src={params.value || "/default-avatar.png"}
-          alt="User"
-          sx={{ width: 40, height: 40 }}
-        />
+        <Avatar src="/broken-image.jpg" />
       </Fab>
     ),
   },

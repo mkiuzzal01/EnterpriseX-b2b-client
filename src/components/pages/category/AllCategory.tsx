@@ -1,59 +1,41 @@
-"use client";
-import { CssVarsProvider } from "@mui/joy/styles";
-import Tabs from "@mui/joy/Tabs";
-import TabList from "@mui/joy/TabList";
-import Tab from "@mui/joy/Tab";
-import TabPanel from "@mui/joy/TabPanel";
-import { Box, Typography } from "@mui/joy";
-import {
-  useAllCategoryQuery,
-  useAllMainCategoryQuery,
-  useAllSubCategoryQuery,
-} from "../../../redux/features/category/category-api";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
+import { useState } from "react";
+import SubCategories from "./components/SubCategories";
+import MainCategory from "./components/MainCategory";
+import Category from "./components/Category";
 
 const AllCategory = () => {
-  const { data: subCate, isLoading: isSubCate } = useAllSubCategoryQuery({});
-  const { data: mainCate, isLoading: isMainCate } = useAllMainCategoryQuery({});
-  const { data: cate, isLoading: isCate } = useAllCategoryQuery({});
+  const [tabIndex, setTabIndex] = useState(0);
 
-  console.log(subCate);
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
 
   return (
     <Box>
-      <CssVarsProvider>
-        <Tabs aria-label="Category Tabs" defaultValue={0}>
-          <TabList>
-            <Tab>Main Categories</Tab>
-            <Tab>Sub Categories</Tab>
-            <Tab>Product Categories</Tab>
-          </TabList>
+      <Tabs value={tabIndex} onChange={handleChange}>
+        <Tab label="Main Categories" />
+        <Tab label="Sub Categories" />
+        <Tab label="Categories" />
+      </Tabs>
 
-          <TabPanel value={0}>
-            <Typography level="title-md" sx={{ mb: 1 }}>
-              All Main Categories
-            </Typography>
-            {/* Replace this with your MainCategoryList component */}
-            <Box>Coming soon: Main Category List/Table</Box>
-          </TabPanel>
+      {tabIndex === 0 && (
+        <Box sx={{ mt: 2 }}>
+          <MainCategory />
+        </Box>
+      )}
 
-          <TabPanel value={1}>
-            <Typography level="title-md" sx={{ mb: 1 }}>
-              All Sub Categories
-            </Typography>
-            {/* Replace this with your SubCategoryList component */}
+      {tabIndex === 1 && (
+        <Box sx={{ mt: 2 }}>
+          <SubCategories />
+        </Box>
+      )}
 
-            <Box>Coming soon: Sub Category List/Table</Box>
-          </TabPanel>
-
-          <TabPanel value={2}>
-            <Typography level="title-md" sx={{ mb: 1 }}>
-              All Product Categories
-            </Typography>
-            {/* Replace this with your CategoryList component */}
-            <Box>Coming soon: Product Category List/Table</Box>
-          </TabPanel>
-        </Tabs>
-      </CssVarsProvider>
+      {tabIndex === 2 && (
+        <Box sx={{ mt: 2 }}>
+          <Category />
+        </Box>
+      )}
     </Box>
   );
 };
