@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box } from "@mui/material";
 import { useState } from "react";
 import { useAllUsersQuery } from "../../../redux/features/user/user-api";
@@ -26,6 +27,51 @@ const userColumns = [
   { field: "role", headerName: "Role", width: 150 },
   { field: "status", headerName: "Status", width: 120 },
   { field: "isDeleted", headerName: "Is Deleted", width: 120 },
+
+  {
+    field: "createdAt",
+    headerName: "Created Time",
+    width: 180,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: any) => {
+      const dateValue = params.row?.createdAt;
+      if (!dateValue) return "N/A";
+      try {
+        return new Date(dateValue).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch {
+        return "Invalid date";
+      }
+    },
+  },
+  {
+    field: "updatedAt",
+    headerName: "Updated Time",
+    width: 180,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: any) => {
+      const dateValue = params.row?.updatedAt;
+      if (!dateValue) return "N/A";
+      try {
+        return new Date(dateValue).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch {
+        return "Invalid date";
+      }
+    },
+  },
 ];
 
 const AllUsers = () => {
@@ -36,12 +82,11 @@ const AllUsers = () => {
 
   const { data, isLoading } = useAllUsersQuery({
     searchTerm,
-    status: status,
+    status,
     page,
     limit,
   });
 
-  //loading handle:
   if (isLoading) return <Loader />;
 
   return (

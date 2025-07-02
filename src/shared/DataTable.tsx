@@ -48,10 +48,10 @@ interface TableProps {
   search?: string;
   setFilter?: (value: string) => void;
   filter?: string;
-  page: number;
-  setPage: (value: number) => void;
-  limit: number;
-  setLimit: (value: number) => void;
+  page?: number;
+  setPage?: (value: number) => void;
+  limit?: number;
+  setLimit?: (value: number) => void;
   meta?: Meta;
 }
 
@@ -202,12 +202,12 @@ const DataTable: React.FC<TableProps> = ({
         disableRowSelectionOnClick
         paginationMode="server"
         rowCount={meta?.total || 0}
-        paginationModel={{ page: page - 1, pageSize: limit }}
+        paginationModel={{ page: (page ?? 1) - 1, pageSize: limit ?? 10 }}
         onPaginationModelChange={({ page: newPage, pageSize: newLimit }) => {
-          setPage(newPage + 1);
+          setPage?.(newPage + 1);
           if (newLimit !== limit) {
-            setLimit(newLimit);
-            setPage(1);
+            setLimit?.(newLimit);
+            setPage?.(1);
           }
         }}
         pageSizeOptions={[5, 10, 20, 50, 100]}

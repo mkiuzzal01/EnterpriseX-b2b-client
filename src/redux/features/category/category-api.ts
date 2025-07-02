@@ -10,10 +10,10 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     updateSubCategory: builder.mutation({
-      query: (id: string) => ({
+      query: ({ id, ...data }) => ({
         url: `/category/update-sub-category/${id}`,
         method: "PATCH",
-        // body: data,
+        body: data,
       }),
     }),
     deleteSubCategory: builder.mutation({
@@ -36,33 +36,33 @@ const categoryApi = baseApi.injectEndpoints({
     }),
     createMainCategory: builder.mutation({
       query: (data) => ({
-        url: "/category/create-category",
+        url: "/category/create-main-category",
         method: "POST",
         body: data,
       }),
     }),
     updateMainCategory: builder.mutation({
-      query: (id: string) => ({
-        url: `/category/update-category/${id}`,
+      query: ({ id, ...data }) => ({
+        url: `/category/update-main-category/${id}`,
         method: "PATCH",
-        // body: data,
+        body: data,
       }),
     }),
     deleteMainCategory: builder.mutation({
       query: (id: string) => ({
-        url: `/category/delete-category/${id}`,
+        url: `/category/delete-main-category/${id}`,
         method: "DELETE",
       }),
     }),
     allMainCategory: builder.query({
       query: () => ({
-        url: "category/all-category",
+        url: "category/all-main-category",
         method: "GET",
       }),
     }),
     singleMainCategory: builder.query({
       query: (id) => ({
-        url: `category/single-category/${id}`,
+        url: `category/single-main-category/${id}`,
         method: "GET",
       }),
     }),
@@ -74,10 +74,10 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     updateCategory: builder.mutation({
-      query: (id: string) => ({
+      query: ({ id, ...data }) => ({
         url: `/category/update-category/${id}`,
         method: "PATCH",
-        // body:
+        body: data,
       }),
     }),
     deleteCategory: builder.mutation({
@@ -106,14 +106,17 @@ export const {
   useSingleSubCategoryQuery,
   useUpdateSubCategoryMutation,
   useDeleteSubCategoryMutation,
+  useCreateSubCategoryMutation,
 
   useAllMainCategoryQuery,
   useSingleMainCategoryQuery,
   useDeleteMainCategoryMutation,
   useUpdateMainCategoryMutation,
+  useCreateMainCategoryMutation,
 
   useAllCategoryQuery,
   useSingleCategoryQuery,
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
+  useCreateCategoryMutation,
 } = categoryApi;
