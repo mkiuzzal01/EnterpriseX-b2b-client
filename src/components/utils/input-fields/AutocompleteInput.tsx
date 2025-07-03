@@ -32,13 +32,11 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
 }) => {
   const { control } = useFormContext();
 
-  const labels = options.map((opt) => opt.label);
-
   return (
     <Controller
       name={name}
       control={control}
-      defaultValue={multiple ? [] : ""}
+      defaultValue={multiple ? [] : null}
       rules={{
         required: required ? `${label} is required` : false,
         validate: (value) => {
@@ -47,12 +45,16 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
             return (
               (Array.isArray(value) &&
                 value.length > 0 &&
-                value.every((v) => typeof v === "string" && v.trim() !== "")) ||
+                value.every(
+                  (v) => typeof v === "object" && v?.label?.trim()
+                )) ||
               `${label} is required`
             );
           } else {
             return (
-              (typeof value === "string" && value.trim() !== "") ||
+              (typeof value === "object" &&
+                value !== null &&
+                value?.label?.trim()) ||
               `${label} is required`
             );
           }
@@ -63,10 +65,33 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
           multiple={multiple}
           freeSolo={freeSolo}
           disabled={disabled}
-          options={labels}
-          value={field.value || (multiple ? [] : "")}
+          options={options}
+          getOptionLabel={(option) =>
+            typeof option === "string" ? option : option.label
+          }
+          isOptionEqualToValue={(option, value) => {
+            if (freeSolo) return option.label === value.label;
+            return option.value === value?.value;
+          }}
+          value={
+            field.value ??
+            (multiple ? [] : freeSolo ? { label: "", value: "" } : null)
+          }
           onChange={(_, newValue) => {
-            field.onChange(newValue);
+            // Handle single vs multiple
+            if (multiple) {
+              field.onChange(
+                Array.isArray(newValue)
+                  ? newValue.filter((v) => v && v.label)
+                  : []
+              );
+            } else {
+              field.onChange(
+                typeof newValue === "string"
+                  ? { label: newValue, value: newValue }
+                  : newValue
+              );
+            }
           }}
           renderInput={(params: AutocompleteRenderInputParams) => (
             <TextField

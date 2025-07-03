@@ -212,6 +212,8 @@ const CreateCategory = () => {
                     name="mainCategory"
                     label="Main Category Name"
                     options={mainCategoryOptions}
+                    freeSolo
+                  
                   />
                 </Grid>
 
