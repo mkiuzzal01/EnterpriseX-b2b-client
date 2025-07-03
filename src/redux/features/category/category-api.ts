@@ -2,6 +2,79 @@ import { baseApi } from "../../api/baseApi";
 
 const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // Main Category
+    createMainCategory: builder.mutation({
+      query: (data) => ({
+        url: "/category/create-main-category",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateMainCategory: builder.mutation({
+      query: ({ slug, ...data }) => ({
+        url: `/category/update-main-category/${slug}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    deleteMainCategory: builder.mutation({
+      query: (id: string) => ({
+        url: `/category/delete-main-category/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    allMainCategory: builder.query({
+      query: ({ search }: { search?: string }) => {
+        const query = new URLSearchParams();
+        if (search) query.append("searchTerm", search);
+        return {
+          url: `/category/all-main-category?${query.toString()}`,
+          method: "GET",
+        };
+      },
+    }),
+    singleMainCategory: builder.query({
+      query: (slug: string) => ({
+        url: `/category/single-main-category/${slug}`,
+        method: "GET",
+      }),
+    }),
+
+    // Category
+    createCategory: builder.mutation({
+      query: (data) => ({
+        url: "/category/create-category",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateCategory: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/category/update-category/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    deleteCategory: builder.mutation({
+      query: (id: string) => ({
+        url: `/category/delete-category/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    allCategory: builder.query({
+      query: () => ({
+        url: "/category/all-category",
+        method: "GET",
+      }),
+    }),
+    singleCategory: builder.query({
+      query: (id: string) => ({
+        url: `/category/single-category/${id}`,
+        method: "GET",
+      }),
+    }),
+
+    // Sub Category
     createSubCategory: builder.mutation({
       query: (data) => ({
         url: "/category/create-sub-category",
@@ -23,7 +96,7 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     allSubCategory: builder.query({
-      query: ({ search }) => {
+      query: ({ search }: { search?: string }) => {
         const query = new URLSearchParams();
         if (search) query.append("searchTerm", search);
         return {
@@ -38,90 +111,28 @@ const categoryApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
-    createMainCategory: builder.mutation({
-      query: (data) => ({
-        url: "/category/create-main-category",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    updateMainCategory: builder.mutation({
-      query: ({ slug, ...data }) => ({
-        url: `/category/update-main-category/${slug}`,
-        method: "PATCH",
-        body: data,
-      }),
-    }),
-    deleteMainCategory: builder.mutation({
-      query: (slug: string) => ({
-        url: `/category/delete-main-category/${slug}`,
-        method: "DELETE",
-      }),
-    }),
-    allMainCategory: builder.query({
-      query: () => ({
-        url: "category/all-main-category",
-        method: "GET",
-      }),
-    }),
-    singleMainCategory: builder.query({
-      query: (slug) => ({
-        url: `category/single-main-category/${slug}`,
-        method: "GET",
-      }),
-    }),
-    createCategory: builder.mutation({
-      query: (data) => ({
-        url: "/category/create-category",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    updateCategory: builder.mutation({
-      query: ({ slug, ...data }) => ({
-        url: `/category/update-category/${slug}`,
-        method: "PATCH",
-        body: data,
-      }),
-    }),
-    deleteCategory: builder.mutation({
-      query: (slug: string) => ({
-        url: `/category/delete-category/${slug}`,
-        method: "DELETE",
-      }),
-    }),
-    allCategory: builder.query({
-      query: () => ({
-        url: "/category/all-category",
-        method: "GET",
-      }),
-    }),
-    singleCategory: builder.query({
-      query: (slug: string) => ({
-        url: `/category/single-category/${slug}`,
-        method: "GET",
-      }),
-    }),
   }),
 });
 
 export const {
-  //sub category
-  useAllSubCategoryQuery,
-  useSingleSubCategoryQuery,
+  // Sub Category
+  useCreateSubCategoryMutation,
   useUpdateSubCategoryMutation,
   useDeleteSubCategoryMutation,
-  useCreateSubCategoryMutation,
-  //main category
+  useAllSubCategoryQuery,
+  useSingleSubCategoryQuery,
+
+  // Main Category
+  useCreateMainCategoryMutation,
+  useUpdateMainCategoryMutation,
+  useDeleteMainCategoryMutation,
   useAllMainCategoryQuery,
   useSingleMainCategoryQuery,
-  useDeleteMainCategoryMutation,
-  useUpdateMainCategoryMutation,
-  useCreateMainCategoryMutation,
-  //category
+
+  // Category
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
   useAllCategoryQuery,
   useSingleCategoryQuery,
-  useDeleteCategoryMutation,
-  useUpdateCategoryMutation,
-  useCreateCategoryMutation,
 } = categoryApi;

@@ -54,7 +54,7 @@ export default function UpdateSubCategory() {
     <Box mt={2}>
       <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 2 }}>
         <FormHeader
-          title="Create Product Category"
+          title="Update Sub Category Category"
           subTitle="Provide your proper information"
         />
 

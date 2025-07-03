@@ -26,6 +26,7 @@ import NotFound from "../components/pages/NotFound";
 import ViewUser from "../components/pages/users/ViewUser";
 import UpdateUser from "../components/pages/users/UpdateUser";
 import UpdateSubCategory from "../components/pages/category/UpdateSubCategory";
+import UpdateMainCategory from "../components/pages/category/UpdateMainCategory";
 
 export const route = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ export const route = createBrowserRouter([
       { path: "all-variant", Component: AllVariant },
       { path: "create-category", Component: CreateCategory },
       { path: "update-sub-category/:slug", Component: UpdateSubCategory },
+      { path: "update-main-category/:slug", Component: UpdateMainCategory },
       { path: "all-category", Component: AllCategory },
       { path: "create-order", Component: CreateOrder },
       { path: "all-order", Component: AllOrder },

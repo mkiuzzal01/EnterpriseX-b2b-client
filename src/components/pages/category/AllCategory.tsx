@@ -1,4 +1,4 @@
-import { Box, Typography, Tabs, Tab } from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 import { useState } from "react";
 import SubCategories from "./components/SubCategories";
 import MainCategory from "./components/MainCategory";

@@ -77,8 +77,6 @@ export default function SubCategories() {
   const [deleteSubCategory, { isLoading: deleting }] =
     useDeleteSubCategoryMutation();
 
-  if (loadingData || deleting) return <Loader />;
-
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
       title: "Delete Sub-category?",
@@ -105,6 +103,9 @@ export default function SubCategories() {
       });
     }
   };
+
+  //handle loading:
+  if (loadingData || deleting) return <Loader />;
 
   return (
     <div>
