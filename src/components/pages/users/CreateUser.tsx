@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Box, Button, Paper, Grid, CircularProgress } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
-import TextInput from "../../utils/input-fields/TextInput";
 import DateInput from "../../utils/input-fields/DateInput";
 import SectionHeader from "../../utils/section/SectionHeader";
 import { GrAction } from "react-icons/gr";
@@ -19,6 +18,7 @@ import ReusableDrawer from "../../../shared/ReusableDrawer";
 import Images from "../../gallery/Images";
 import { useAppSelector } from "../../../redux/hooks";
 import { useGetImageByIdQuery } from "../../../redux/features/gallery/image-api";
+import TextInput from "../../utils/input-fields/TextInput";
 
 const CreateUser = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);

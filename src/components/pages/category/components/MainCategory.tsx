@@ -62,6 +62,11 @@ const columns = [
         : "N/A";
     },
   },
+  {
+    field: "isActive",
+    headerName: "Is Active",
+    minWidth: 200,
+  },
 ];
 
 export default function MainCategory() {
@@ -100,6 +105,7 @@ export default function MainCategory() {
   //handle loading:
   if (isLoading || isDeleting) return <Loader />;
 
+  console.log(data);
   return (
     <div>
       <DataTable
@@ -111,6 +117,7 @@ export default function MainCategory() {
         setSearch={setSearch}
         createPath="/create-category"
         updatePath="/update-main-category"
+        viewPath="/view-categories"
       />
     </div>
   );

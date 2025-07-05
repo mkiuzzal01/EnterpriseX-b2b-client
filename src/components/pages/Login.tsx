@@ -1,4 +1,4 @@
-import TextInput from "../utils/input-fields/TextInput";
+
 import { Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import ReusableForm from "../../shared/ReusableFrom";
@@ -8,6 +8,7 @@ import { verifyToken } from "../../lib/verifyToken";
 import { setUser, type TUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../utils/tost-alert/ToastProvider";
 import Loader from "../../shared/Loader";
+import TextInput from "../utils/input-fields/TextInput";
 
 type FormValues = {
   email: string;

@@ -1,5 +1,4 @@
 import { Box, Button, Grid, Paper } from "@mui/material";
-import TextInput from "../../utils/input-fields/TextInput";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
 import { useState } from "react";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -14,6 +13,7 @@ import ReusableForm from "../../../shared/ReusableFrom";
 import VariantsSection from "../../utils/VariantsSection";
 import FormHeader from "../../utils/FormHeader";
 import { useAllVariantQuery } from "../../../redux/features/variant/variant-api";
+import TextInput from "../../utils/input-fields/TextInput";
 
 type Attribute = {
   value: string;

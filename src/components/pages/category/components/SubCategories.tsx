@@ -17,9 +17,9 @@ const subCategoryColumns: GridColDef[] = [
     width: 100,
     sortable: false,
     filterable: false,
-    renderCell: () => (
+    renderCell: (params) => (
       <Fab size="small" color="primary">
-        <Avatar>SC</Avatar>
+        <Avatar>{params?.row?.name?.charAt(0)?.toUpperCase() || "M"}</Avatar>
       </Fab>
     ),
   },

@@ -15,8 +15,8 @@ const AllCategory = () => {
     <Box>
       <Tabs value={tabIndex} onChange={handleChange}>
         <Tab label="Main Categories" />
-        <Tab label="Sub Categories" />
         <Tab label="Categories" />
+        <Tab label="Sub Categories" />
       </Tabs>
 
       {tabIndex === 0 && (
@@ -27,13 +27,12 @@ const AllCategory = () => {
 
       {tabIndex === 1 && (
         <Box sx={{ mt: 2 }}>
-          <SubCategories />
+          <Category />
         </Box>
       )}
-
       {tabIndex === 2 && (
         <Box sx={{ mt: 2 }}>
-          <Category />
+          <SubCategories />
         </Box>
       )}
     </Box>

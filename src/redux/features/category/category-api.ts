@@ -49,8 +49,8 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     updateCategory: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/category/update-category/${id}`,
+      query: ({ slug, ...data }) => ({
+        url: `/category/update-category/${slug}`,
         method: "PATCH",
         body: data,
       }),
@@ -62,14 +62,19 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     allCategory: builder.query({
-      query: () => ({
-        url: "/category/all-category",
-        method: "GET",
-      }),
+      query: ({ search }: { search?: string }) => {
+        const query = new URLSearchParams();
+        if (search) query.append("searchTerm", search);
+        return {
+          url: `/category/all-category?${query.toString()}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: any) => response.data,
     }),
     singleCategory: builder.query({
-      query: (id: string) => ({
-        url: `/category/single-category/${id}`,
+      query: (slug: string) => ({
+        url: `/category/single-category/${slug}`,
         method: "GET",
       }),
     }),
@@ -90,8 +95,8 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     deleteSubCategory: builder.mutation({
-      query: (slug: string) => ({
-        url: `/category/delete-sub-category/${slug}`,
+      query: (id: string) => ({
+        url: `/category/delete-sub-category/${id}`,
         method: "DELETE",
       }),
     }),

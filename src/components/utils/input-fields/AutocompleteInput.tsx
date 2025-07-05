@@ -1,9 +1,6 @@
-import React from "react";
-import {
-  Autocomplete,
-  TextField,
-  type AutocompleteRenderInputParams,
-} from "@mui/material";
+"use client";
+
+import { Autocomplete, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
 export interface Option {
@@ -11,102 +8,75 @@ export interface Option {
   value: string;
 }
 
-interface AutocompleteInputProps {
+interface Props {
   name: string;
   label: string;
-  options: Option[];
+  options?: Option[];
   required?: boolean;
   disabled?: boolean;
-  multiple?: boolean;
   freeSolo?: boolean;
+  placeholder?: string;
 }
 
-const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
+export default function AutocompleteInput({
   name,
   label,
-  options,
+  options = [],
   required = false,
   disabled = false,
-  multiple = false,
   freeSolo = false,
-}) => {
+  placeholder,
+}: Props) {
   const { control } = useFormContext();
+
+  const valueToLabel = (val: string) => {
+    const found = options.find((o) => o.value === val);
+    return found ? found.label : val;
+  };
+
+  const labelToValue = (label: string) => {
+    const found = options.find((o) => o.label === label);
+    return found ? found.value : label;
+  };
 
   return (
     <Controller
       name={name}
       control={control}
-      defaultValue={multiple ? [] : null}
+      defaultValue={[]}
       rules={{
-        required: required ? `${label} is required` : false,
-        validate: (value) => {
-          if (!required) return true;
-          if (multiple) {
-            return (
-              (Array.isArray(value) &&
-                value.length > 0 &&
-                value.every(
-                  (v) => typeof v === "object" && v?.label?.trim()
-                )) ||
-              `${label} is required`
-            );
-          } else {
-            return (
-              (typeof value === "object" &&
-                value !== null &&
-                value?.label?.trim()) ||
-              `${label} is required`
-            );
-          }
-        },
+        validate: (value) =>
+          required && (!Array.isArray(value) || value.length === 0)
+            ? `${label} is required`
+            : true,
       }}
       render={({ field, fieldState }) => (
         <Autocomplete
-          multiple={multiple}
+          multiple
           freeSolo={freeSolo}
           disabled={disabled}
-          options={options}
-          getOptionLabel={(option) =>
-            typeof option === "string" ? option : option.label
-          }
-          isOptionEqualToValue={(option, value) => {
-            if (freeSolo) return option.label === value.label;
-            return option.value === value?.value;
-          }}
-          value={
-            field.value ??
-            (multiple ? [] : freeSolo ? { label: "", value: "" } : null)
-          }
-          onChange={(_, newValue) => {
-            // Handle single vs multiple
-            if (multiple) {
-              field.onChange(
-                Array.isArray(newValue)
-                  ? newValue.filter((v) => v && v.label)
-                  : []
-              );
-            } else {
-              field.onChange(
-                typeof newValue === "string"
-                  ? { label: newValue, value: newValue }
-                  : newValue
-              );
+          options={options.map((o) => o.label)}
+          value={(field.value ?? []).map(valueToLabel)}
+          onChange={(_, newVal) => {
+            if (!Array.isArray(newVal)) {
+              field.onChange([]);
+              return;
             }
+            const newValues = newVal.map(labelToValue);
+            field.onChange(newValues);
           }}
-          renderInput={(params: AutocompleteRenderInputParams) => (
+          renderInput={(params) => (
             <TextField
               {...params}
               label={label}
-              required={required}
+              placeholder={placeholder}
               error={!!fieldState.error}
               helperText={fieldState.error?.message}
-              disabled={disabled}
+              required={required}
             />
           )}
         />
       )}
     />
   );
-};
-
-export default AutocompleteInput;
+}

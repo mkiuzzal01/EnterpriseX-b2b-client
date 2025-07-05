@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -17,6 +18,7 @@ import ReusableModal from "../../../shared/ReusableModal";
 import AutocompleteInput from "../../utils/input-fields/AutocompleteInput";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import type { FieldValue } from "react-hook-form";
+import InputWithSuggestion from "../../utils/input-fields/InputWithSuggestion";
 
 const CreateCategory = () => {
   const [isSubCate, setSubCate] = useState(false);
@@ -41,10 +43,10 @@ const CreateCategory = () => {
 
   const [createSubCategory, { isLoading: creatingSub }] =
     useCreateSubCategoryMutation();
-  const [createMainCategory, { isLoading: creatingMain }] =
-    useCreateMainCategoryMutation();
   const [createCategory, { isLoading: creatingCategory }] =
     useCreateCategoryMutation();
+  const [createMainCategory, { isLoading: creatingMain }] =
+    useCreateMainCategoryMutation();
 
   const subCategoryOptions =
     subCategoryData?.data?.result?.map((item: any) => ({
@@ -59,21 +61,20 @@ const CreateCategory = () => {
     })) || [];
 
   const categoryOptions =
-    categoryData?.data?.map((item: any) => ({
+    categoryData?.result?.map((item: any) => ({
       label: item.name,
       value: item._id,
     })) || [];
 
-  console.log(categoryOptions);
-
   const onSubmitMainCategory = async (data: FieldValue<any>) => {
-    return console.log(data);
+    console.log(data);
     try {
       const payload = {
-        name: data.name,
-        subCategory: data.subCategory,
-        category: data.mainCategory,
+        name: data?.mainCategory?.value,
+        category: data?.category,
+        subCategory: data?.subCategory,
       };
+
       const res = await createMainCategory(payload).unwrap();
       if (res?.success) {
         showToast({
@@ -97,7 +98,9 @@ const CreateCategory = () => {
 
   const onSubmitSubCategory = async (data: FieldValue<any>) => {
     try {
-      const res = await createSubCategory({ name: data.name }).unwrap();
+      const res = await createSubCategory({
+        name: data?.subCategory?.value,
+      }).unwrap();
       if (res?.success) {
         showToast({
           message: res.message || "Sub Category created!",
@@ -120,7 +123,9 @@ const CreateCategory = () => {
 
   const onSubmitCategory = async (data: FieldValue<any>) => {
     try {
-      const res = await createCategory({ name: data.name }).unwrap();
+      const res = await createCategory({
+        name: data?.category?.value,
+      }).unwrap();
       if (res?.success) {
         showToast({
           message: res.message || "Category created successfully!",
@@ -186,7 +191,6 @@ const CreateCategory = () => {
                     name="category"
                     label="Category"
                     options={categoryOptions}
-                    multiple
                   />
                 </Grid>
                 <Grid
@@ -199,7 +203,6 @@ const CreateCategory = () => {
                     name="subCategory"
                     label="Sub Category"
                     options={subCategoryOptions}
-                    multiple
                   />
                 </Grid>
 
@@ -208,12 +211,11 @@ const CreateCategory = () => {
                     xs: 12,
                   }}
                 >
-                  <AutocompleteInput
+                  <InputWithSuggestion
                     name="mainCategory"
                     label="Main Category Name"
                     options={mainCategoryOptions}
-                    freeSolo
-                  
+                    required
                   />
                 </Grid>
 
@@ -254,8 +256,8 @@ const CreateCategory = () => {
         >
           <ReusableForm onSubmit={onSubmitSubCategory}>
             <>
-              <AutocompleteInput
-                name="name"
+              <InputWithSuggestion
+                name="subCategory"
                 label="Sub Category Name"
                 options={subCategoryOptions}
                 required
@@ -292,8 +294,8 @@ const CreateCategory = () => {
         >
           <ReusableForm onSubmit={onSubmitCategory}>
             <>
-              <AutocompleteInput
-                name="name"
+              <InputWithSuggestion
+                name="category"
                 label="Category Name"
                 options={categoryOptions}
                 required

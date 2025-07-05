@@ -4,31 +4,28 @@ import ReusableForm from "../../../shared/ReusableFrom";
 import type { FieldValue } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  useSingleMainCategoryQuery,
-  useUpdateMainCategoryMutation,
+  useSingleCategoryQuery,
+  useUpdateCategoryMutation,
 } from "../../../redux/features/category/category-api";
 import Loader from "../../../shared/Loader";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import TextInput from "../../utils/input-fields/TextInput";
-import RadioInput from "../../utils/input-fields/RadioInput";
 
-export default function UpdateMainCategory() {
+export default function UpdateCategory() {
   const { slug } = useParams();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const { data, isLoading } = useSingleMainCategoryQuery(slug ?? "");
-  const [updateMainCategory, { isLoading: updating }] =
-    useUpdateMainCategoryMutation();
+  const { data, isLoading } = useSingleCategoryQuery(slug ?? "");
+  const [updateCategory, { isLoading: updating }] = useUpdateCategoryMutation();
 
   const handleSubmit = async (formData: FieldValue<any>) => {
     try {
-      await updateMainCategory({
+      await updateCategory({
         slug: data?.data?.slug,
         name: formData?.name,
-        isActive: formData?.isActive,
       }).unwrap();
       showToast({
-        message: "Main Category updated successfully!",
+        message: "Category updated successfully!",
         type: "success",
         duration: 3000,
         position: {
@@ -39,7 +36,7 @@ export default function UpdateMainCategory() {
       navigate(-1);
     } catch {
       showToast({
-        message: "Failed to update main category.",
+        message: "Failed to update category.",
         type: "error",
       });
     }
@@ -47,11 +44,12 @@ export default function UpdateMainCategory() {
 
   //handle loading:
   if (isLoading) return <Loader />;
+
   return (
     <Box mt={2}>
       <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 2 }}>
         <FormHeader
-          title="Update Main Category"
+          title="Update Category"
           subTitle="Provide your proper information"
         />
 
@@ -59,22 +57,11 @@ export default function UpdateMainCategory() {
           onSubmit={handleSubmit}
           defaultValues={{
             name: data?.data?.name || "",
-            isActive: data?.data?.isActive,
           }}
         >
           <Grid container spacing={2} mt={2}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <TextInput name="name" label="Main Category Name" />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <RadioInput
-                name={"isActive"}
-                label={"Do you Active?"}
-                options={[
-                  { label: "Active", value: true },
-                  { label: "Inactive", value: false },
-                ]}
-              />
+              <TextInput name="name" label="Category Name" />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <Button variant="contained" color="primary" type="submit">
