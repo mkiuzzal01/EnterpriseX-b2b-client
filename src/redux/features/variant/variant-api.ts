@@ -11,17 +11,16 @@ const variantApi = baseApi.injectEndpoints({
       }),
     }),
     updateVariant: builder.mutation({
-      query: (id: string) => ({
+      query: (id, ...data) => ({
         url: `/product-variant/update-product-variant/${id}`,
         method: "PATCH",
-        // body: data,
+        body: data,
       }),
     }),
     deleteVariant: builder.mutation({
       query: (id: string) => ({
         url: `/product-variant/delete-single-product-variant/${id}`,
         method: "DELETE",
-        // body: data,
       }),
     }),
     //get all variant:
@@ -33,8 +32,8 @@ const variantApi = baseApi.injectEndpoints({
     }),
     //get single variant:
     singleVariant: builder.query({
-      query: (id: string) => ({
-        url: `/product-variant/get-single-product-variant/${id}`,
+      query: (slug: string) => ({
+        url: `/product-variant/get-single-product-variant/${slug}`,
         method: "GET",
       }),
     }),
