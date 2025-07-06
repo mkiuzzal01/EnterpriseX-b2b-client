@@ -14,6 +14,11 @@ import VariantsSection from "../../utils/VariantsSection";
 import FormHeader from "../../utils/FormHeader";
 import { useAllVariantQuery } from "../../../redux/features/variant/variant-api";
 import TextInput from "../../utils/input-fields/TextInput";
+import {
+  useAllCategoryQuery,
+  useAllMainCategoryQuery,
+  useAllSubCategoryQuery,
+} from "../../../redux/features/category/category-api";
 
 type Attribute = {
   value: string;
@@ -43,11 +48,15 @@ type CreateProductFormData = {
 };
 
 const CreateProduct = () => {
-  const { data, isLoading, isError } = useAllVariantQuery(undefined);
-  console.log(data);
   const [variants, setVariants] = useState<Variant[]>([
     { name: "", attributes: [{ value: "", quantity: 0 }] },
   ]);
+  const { data: variantData, isLoading } = useAllVariantQuery({});
+  const { data: mainCategoryData, isLoading: isMainCatLoading } =
+    useAllMainCategoryQuery({});
+  const { data: CategoryData, isLoading: catLoading } = useAllCategoryQuery({});
+  const { data: subCategory, isLoading: subCateLoading } =
+    useAllSubCategoryQuery({});
 
   const onSubmit = (data: CreateProductFormData) => {
     try {
@@ -245,6 +254,14 @@ const CreateProduct = () => {
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 12 }}>
                 <TextInput
+                  name="optionalLinks"
+                  label="Optional Link"
+                  required
+                  placeholder="Provide your optional link if have"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <TextInput
                   name="description"
                   label="Full Description"
                   multiline={true}
@@ -275,7 +292,7 @@ const CreateProduct = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
+                color="success"
                 size="large"
                 startIcon={<SaveIcon />}
               >
