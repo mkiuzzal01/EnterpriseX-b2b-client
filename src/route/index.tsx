@@ -29,6 +29,8 @@ import UpdateSubCategory from "../components/pages/category/UpdateSubCategory";
 import UpdateMainCategory from "../components/pages/category/UpdateMainCategory";
 import ViewCategories from "../components/pages/category/ViewCategories";
 import UpdateCategory from "../components/pages/category/UpdateCategory";
+import ViewAttributes from "../components/pages/variant/ViewAttributes";
+import UpdateVariant from "../components/pages/variant/UpdateVariant";
 
 export const route = createBrowserRouter([
   {
@@ -43,8 +45,10 @@ export const route = createBrowserRouter([
       { path: "update-user/:slug", Component: UpdateUser },
       { path: "create-product", Component: CreateProduct },
       { path: "all-product", Component: AllProduct },
-      { path: "create-variant", Component: CreateVariant },
       { path: "all-variant", Component: AllVariant },
+      { path: "create-variant", Component: CreateVariant },
+      { path: "update-variant/:slug", Component: UpdateVariant },
+      { path: "view-attributes/:slug", Component: ViewAttributes },
       { path: "create-category", Component: CreateCategory },
       { path: "update-sub-category/:slug", Component: UpdateSubCategory },
       { path: "update-category/:slug", Component: UpdateCategory },

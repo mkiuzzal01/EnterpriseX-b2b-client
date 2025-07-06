@@ -107,7 +107,7 @@ export default function MainCategory() {
 
   console.log(data);
   return (
-    <div>
+    <>
       <DataTable
         rows={data?.data?.result || []}
         columns={columns}
@@ -119,6 +119,6 @@ export default function MainCategory() {
         updatePath="/update-main-category"
         viewPath="/view-categories"
       />
-    </div>
+    </>
   );
 }

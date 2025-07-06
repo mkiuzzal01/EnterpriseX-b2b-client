@@ -1,74 +1,85 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  useSingleVariantQuery,
+  useUpdateVariantMutation,
+} from "../../../redux/features/variant/variant-api";
 import {
   Box,
-  Grid,
-  IconButton,
-  Paper,
   Button,
   CircularProgress,
+  IconButton,
+  Paper,
+  Grid,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
-import { useMemo, useState } from "react";
 import { nanoid } from "nanoid";
-import ReusableForm from "../../../shared/ReusableFrom";
+import type { FieldValue } from "react-hook-form";
 import FormHeader from "../../utils/FormHeader";
-import Loader from "../../../shared/Loader";
+import ReusableForm from "../../../shared/ReusableFrom";
 import InputWithSuggestion from "../../utils/input-fields/InputWithSuggestion";
-import {
-  useAllVariantQuery,
-  useCreateVariantMutation,
-} from "../../../redux/features/variant/variant-api";
+import Loader from "../../../shared/Loader";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 
-type AttributeValue = {
+type AttributeInput = {
   id: string;
   value: string;
 };
 
-type Option = {
-  label: string;
-  value: string;
-};
-
-const CreateVariant = () => {
-  const [attributes, setAttributes] = useState<AttributeValue[]>([
-    { id: nanoid(), value: "" },
-  ]);
+export default function UpdateVariant() {
+  const { slug } = useParams();
+  const { data, isLoading } = useSingleVariantQuery(slug ?? "");
+  const [updateVariant, { isLoading: isUpdating }] = useUpdateVariantMutation();
   const { showToast } = useToast();
-  const { data, isLoading, refetch } = useAllVariantQuery({});
-  const [createVariant, { isLoading: isCreating }] = useCreateVariantMutation();
 
-  const variants = useMemo(() => {
-    return data?.data?.result?.filter((variant: any) => variant?.name) || [];
-  }, [data]);
+  const variant = data?.data;
+  const [attributes, setAttributes] = useState<AttributeInput[]>([]);
 
-  const variantNameOptions = useMemo(
-    () => variants.map(({ name }: any) => ({ label: name, value: name })),
-    [variants]
-  );
+  useEffect(() => {
+    if (variant?.attributes?.length) {
+      const initialAttributes = variant.attributes.map((attr: any) => ({
+        id: nanoid(),
+        value: attr?.value || "",
+      }));
+      setAttributes(initialAttributes);
+    }
+  }, [variant]);
 
-  const attributeValueOptions: Option[] = useMemo(() => {
-    const values = variants.flatMap((variant: any) =>
-      variant.attributes?.map((attr: any) => attr.value)
-    );
-    const unique = [...new Set(values)];
-    return unique
+  const attributeValueOptions = useMemo(() => {
+    const values = variant?.attributes?.map((attr: any) => attr?.value) || [];
+    return [...new Set(values)]
       .filter((val): val is string => typeof val === "string")
       .map((val) => ({ label: val, value: val }));
-  }, [variants]);
+  }, [variant]);
 
-  const handleAddAttribute = () => {
+  const defaultValues = useMemo(() => {
+    const attrDefaults: Record<string, any> = {};
+    attributes.forEach((attr) => {
+      attrDefaults[`attr_${attr.id}`] = {
+        label: attr.value,
+        value: attr.value,
+      };
+    });
+
+    return {
+      name: variant?.name
+        ? { label: variant.name, value: variant.name }
+        : undefined,
+      ...attrDefaults,
+    };
+  }, [attributes, variant?.name]);
+
+  const handleAddAttribute = () =>
     setAttributes((prev) => [...prev, { id: nanoid(), value: "" }]);
-  };
 
-  const handleRemoveAttribute = (id: string) => {
+  const handleRemoveAttribute = (id: string) =>
     setAttributes((prev) => prev.filter((attr) => attr.id !== id));
-  };
 
-  //handle variant submit:
-  const onSubmit = async (formData: Record<string, any>) => {
+  // Submit Handler
+  const onSubmit = async (formData: FieldValue<any>) => {
     try {
-      const attributeValues: { value: string }[] = attributes.map((attr) => {
+      const attributeValues = attributes.map((attr) => {
         const input = formData[`attr_${attr.id}`];
         return {
           value:
@@ -82,22 +93,23 @@ const CreateVariant = () => {
           ? nameInput.value
           : nameInput;
 
-      const payload = {
-        name,
-        attributes: attributeValues,
-      };
-      const res = await createVariant(payload).unwrap();
+      const payload = { name, attributes: attributeValues };
+      const res = await updateVariant({ slug, body: payload }).unwrap();
       if (res?.success) {
         showToast({
-          message: "Variant created successfully!",
+          message: res?.message || "Variant updated successfully!",
           type: "success",
+          position: {
+            horizontal: "right",
+            vertical: "top",
+          },
         });
-        refetch();
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error: any) {
+      const errMsg =
+        error?.data?.message || error?.message || "Update failed. Try again.";
       showToast({
-        message: "Something went wrong",
+        message: errMsg,
         type: "error",
         position: {
           horizontal: "right",
@@ -107,26 +119,33 @@ const CreateVariant = () => {
     }
   };
 
-  //handle loading:
   if (isLoading) return <Loader />;
 
   return (
     <Box>
       <Paper elevation={2} sx={{ p: 4 }}>
         <FormHeader
-          title="Create a New Variant"
-          subTitle="Define the type of variant such as color, size, material, etc."
+          title="Update Variant"
+          subTitle="Modify the variant name and its attributes."
         />
 
-        <ReusableForm onSubmit={onSubmit}>
+        <ReusableForm
+          key={attributes.length}
+          onSubmit={onSubmit}
+          defaultValues={defaultValues}
+        >
           <Grid container spacing={3}>
             {/* Variant Name */}
-            <Grid size={{ xs: 12 }} mt={4}>
+            <Grid size={{ xs: 12 }} mt={2}>
               <InputWithSuggestion
                 name="name"
                 label="Variant Name"
                 placeholder="e.g. Color, Size"
-                options={variantNameOptions}
+                options={
+                  variant?.name
+                    ? [{ label: variant.name, value: variant.name }]
+                    : []
+                }
                 required
               />
             </Grid>
@@ -144,9 +163,9 @@ const CreateVariant = () => {
                   <Grid size={{ xs: 10 }}>
                     <InputWithSuggestion
                       name={`attr_${attr.id}`}
-                      label="Value"
-                      options={attributeValueOptions}
+                      label="Attribute Value"
                       placeholder="e.g. Red, Large, Cotton"
+                      options={attributeValueOptions}
                       required
                     />
                   </Grid>
@@ -169,17 +188,17 @@ const CreateVariant = () => {
                 startIcon={<Add />}
                 sx={{ mt: 2 }}
               >
-                Add More Values
+                Add Attribute
               </Button>
             </Grid>
 
             {/* Submit Button */}
             <Grid size={{ xs: 12 }}>
-              <Button type="submit" variant="contained">
-                {isCreating ? (
+              <Button type="submit" variant="contained" disabled={isUpdating}>
+                {isUpdating ? (
                   <CircularProgress size={24} sx={{ color: "white" }} />
                 ) : (
-                  "Submit Variant"
+                  "Update Variant"
                 )}
               </Button>
             </Grid>
@@ -188,6 +207,4 @@ const CreateVariant = () => {
       </Paper>
     </Box>
   );
-};
-
-export default CreateVariant;
+}

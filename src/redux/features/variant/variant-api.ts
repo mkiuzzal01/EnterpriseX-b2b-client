@@ -2,38 +2,43 @@ import { baseApi } from "../../api/baseApi";
 
 const variantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    //create variant:
     createVariant: builder.mutation({
       query: (data) => ({
-        url: "/product-variant/crate-product-variant",
+        url: "/product-variant/create-product-variant",
         method: "POST",
         body: data,
       }),
     }),
+
     updateVariant: builder.mutation({
-      query: (id, ...data) => ({
-        url: `/product-variant/update-product-variant/${id}`,
+      query: ({ slug, body }) => ({
+        url: `/product-variant/update-product-variant/${slug}`,
         method: "PATCH",
-        body: data,
+        body,
       }),
     }),
+
     deleteVariant: builder.mutation({
       query: (id: string) => ({
-        url: `/product-variant/delete-single-product-variant/${id}`,
+        url: `/product-variant/delete-product-variant/${id}`,
         method: "DELETE",
       }),
     }),
-    //get all variant:
+
     allVariant: builder.query({
-      query: () => ({
-        url: "/product-variant/all-product-variant",
-        method: "GET",
-      }),
+      query: ({ search }: { search?: string }) => {
+        const params = new URLSearchParams();
+        if (search) params.append("searchTerm", search);
+        return {
+          url: `/product-variant/all-product-variant?${params.toString()}`,
+          method: "GET",
+        };
+      },
     }),
-    //get single variant:
+
     singleVariant: builder.query({
       query: (slug: string) => ({
-        url: `/product-variant/get-single-product-variant/${slug}`,
+        url: `/product-variant/single-product-variant/${slug}`,
         method: "GET",
       }),
     }),
