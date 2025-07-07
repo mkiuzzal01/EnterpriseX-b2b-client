@@ -15,6 +15,7 @@ interface Props {
   required?: boolean;
   disabled?: boolean;
   freeSolo?: boolean;
+  multiple?: boolean;
   placeholder?: string;
 }
 
@@ -25,17 +26,18 @@ export default function AutocompleteInput({
   required = false,
   disabled = false,
   freeSolo = false,
+  multiple = false,
   placeholder,
 }: Props) {
   const { control } = useFormContext();
 
   const valueToLabel = (val: string) => {
-    const found = options.find((o) => o.value === val);
+    const found = options?.find((o) => o.value === val);
     return found ? found.label : val;
   };
 
   const labelToValue = (label: string) => {
-    const found = options.find((o) => o.label === label);
+    const found = options?.find((o) => o.label === label);
     return found ? found.value : label;
   };
 
@@ -43,34 +45,42 @@ export default function AutocompleteInput({
     <Controller
       name={name}
       control={control}
-      defaultValue={[]}
+      defaultValue={multiple ? [] : ""}
       rules={{
         validate: (value) =>
-          required && (!Array.isArray(value) || value.length === 0)
+          required &&
+          ((multiple && (!Array?.isArray(value) || value?.length === 0)) ||
+            (!multiple && !value))
             ? `${label} is required`
             : true,
       }}
       render={({ field, fieldState }) => (
         <Autocomplete
-          multiple
+          multiple={multiple}
           freeSolo={freeSolo}
           disabled={disabled}
-          options={options.map((o) => o.label)}
-          value={(field.value ?? []).map(valueToLabel)}
+          options={options?.map((o) => o?.label)}
+          value={
+            multiple
+              ? (Array.isArray(field?.value) ? field.value : []).map(
+                  valueToLabel
+                )
+              : valueToLabel(field?.value ?? "")
+          }
           onChange={(_, newVal) => {
-            if (!Array.isArray(newVal)) {
-              field.onChange([]);
-              return;
+            if (multiple) {
+              const newValues = (newVal as string[])?.map(labelToValue);
+              field.onChange(newValues);
+            } else {
+              field.onChange(labelToValue(newVal as string));
             }
-            const newValues = newVal.map(labelToValue);
-            field.onChange(newValues);
           }}
           renderInput={(params) => (
             <TextField
               {...params}
               label={label}
               placeholder={placeholder}
-              error={!!fieldState.error}
+              error={!!fieldState?.error}
               helperText={fieldState.error?.message}
               required={required}
             />
