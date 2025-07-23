@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback } from "react";
+"use client";
+import React from "react";
 import { Add, Delete } from "@mui/icons-material";
 import {
   Box,
@@ -14,8 +15,8 @@ import {
 import { useFormContext, useWatch } from "react-hook-form";
 import TextInput from "./input-fields/TextInput";
 import AutocompleteInput from "./input-fields/AutocompleteInput";
+import { nanoid } from "nanoid";
 
-// Type definitions
 interface Attribute {
   id: string;
   value: string;
@@ -34,141 +35,106 @@ interface Option {
 }
 
 interface VariantsSectionProps {
-  variants: Variant[];
-  setVariants: React.Dispatch<React.SetStateAction<Variant[]>>;
   variantNameOptions?: Option[];
   attributeOptions?: Record<string, Option[]>;
-  maxVariants?: number;
-  maxAttributesPerVariant?: number;
 }
 
 const VariantsSection: React.FC<VariantsSectionProps> = ({
-  variants,
-  setVariants,
   variantNameOptions = [],
   attributeOptions = {},
-  maxVariants = 10,
-  maxAttributesPerVariant = 20,
 }) => {
-  const { setValue, control } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
-  // Watch variant names for dynamic attribute options
-  const variantNames: string[] =
-    useWatch({
-      control,
-      name: "variants",
-    })?.map((v: any) => v?.name || "") || [];
-
-  // Sync variants state with form
-  useEffect(() => {
-    setValue("variantsData", JSON.stringify(variants));
-  }, [variants, setValue]);
-
-  // Generate unique ID
-  const generateId = useCallback((): string => {
-    return (
-      crypto.randomUUID?.() ||
-      `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    );
-  }, []);
+  // Get current variants from form
+  const variants: Variant[] = useWatch({
+    control,
+    name: "variants",
+    defaultValue: [
+      {
+        id: nanoid(),
+        name: "",
+        attributes: [{ id: nanoid(), value: "", quantity: 0 }],
+      },
+    ],
+  });
 
   // Create empty variant
-  const createEmptyVariant = useCallback(
-    (): Variant => ({
-      id: generateId(),
-      name: "",
-      attributes: [{ id: generateId(), value: "", quantity: 0 }],
-    }),
-    [generateId]
-  );
+  const createEmptyVariant = (): Variant => ({
+    id: nanoid(),
+    name: "",
+    attributes: [{ id: nanoid(), value: "", quantity: 0 }],
+  });
 
   // Create empty attribute
-  const createEmptyAttribute = useCallback(
-    (): Attribute => ({
-      id: generateId(),
-      value: "",
-      quantity: 0,
-    }),
-    [generateId]
-  );
+  const createEmptyAttribute = (): Attribute => ({
+    id: nanoid(),
+    value: "",
+    quantity: 0,
+  });
 
-  // Add new variant
-  const addVariant = useCallback(() => {
-    if (variants.length >= maxVariants) return;
-
-    setVariants((prev) => [...prev, createEmptyVariant()]);
-  }, [variants.length, maxVariants, setVariants, createEmptyVariant]);
+  // Add variant
+  const addVariant = () => {
+    const currentVariants = getValues("variants") || [];
+    setValue("variants", [...currentVariants, createEmptyVariant()]);
+  };
 
   // Remove variant
-  const removeVariant = useCallback(
-    (variantId: string) => {
-      setVariants((prev) => {
-        const filtered = prev.filter((v) => v.id !== variantId);
-        return filtered.length > 0 ? filtered : [createEmptyVariant()];
-      });
-    },
-    [setVariants, createEmptyVariant]
-  );
+  const removeVariant = (variantId: string) => {
+    const currentVariants = getValues("variants") || [];
+    const filtered = currentVariants.filter((v: Variant) => v.id !== variantId);
+    setValue(
+      "variants",
+      filtered.length > 0 ? filtered : [createEmptyVariant()]
+    );
+  };
 
-  // Add attribute to variant
-  const addAttribute = useCallback(
-    (variantId: string) => {
-      setVariants((prev) =>
-        prev.map((variant) => {
-          if (variant.id !== variantId) return variant;
-          if (variant.attributes.length >= maxAttributesPerVariant)
-            return variant;
+  // Add attribute
+  const addAttribute = (variantId: string) => {
+    const currentVariants = getValues("variants") || [];
+    setValue(
+      "variants",
+      currentVariants.map((variant: Variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              attributes: [...variant.attributes, createEmptyAttribute()],
+            }
+          : variant
+      )
+    );
+  };
 
-          return {
-            ...variant,
-            attributes: [...variant.attributes, createEmptyAttribute()],
-          };
-        })
-      );
-    },
-    [setVariants, maxAttributesPerVariant, createEmptyAttribute]
-  );
+  // Remove attribute
+  const removeAttribute = (variantId: string, attributeId: string) => {
+    const currentVariants = getValues("variants") || [];
+    setValue(
+      "variants",
+      currentVariants.map((variant: Variant) =>
+        variant.id === variantId && variant.attributes.length > 1
+          ? {
+              ...variant,
+              attributes: variant.attributes.filter(
+                (attr) => attr.id !== attributeId
+              ),
+            }
+          : variant
+      )
+    );
+  };
 
-  // Remove attribute from variant
-  const removeAttribute = useCallback(
-    (variantId: string, attributeId: string) => {
-      setVariants((prev) =>
-        prev.map((variant) => {
-          if (variant.id !== variantId || variant.attributes.length <= 1) {
-            return variant;
-          }
-
-          return {
-            ...variant,
-            attributes: variant.attributes.filter(
-              (attr) => attr.id !== attributeId
-            ),
-          };
-        })
-      );
-    },
-    [setVariants]
-  );
-
-  // Get attribute options for specific variant
-  const getAttributeOptions = useCallback(
-    (variantIndex: number): Option[] => {
-      const variantKey = variantNames[variantIndex]?.toLowerCase?.() || "";
-      return Array.isArray(attributeOptions[variantKey])
-        ? attributeOptions[variantKey]
-        : [];
-    },
-    [variantNames, attributeOptions]
-  );
+  // Get attribute options for current variant name
+  const getAttributeOptions = (variantIndex: number): Option[] => {
+    const variantName = variants[variantIndex]?.name?.toLowerCase?.() || "";
+    return Array.isArray(attributeOptions[variantName])
+      ? attributeOptions[variantName]
+      : [];
+  };
 
   return (
     <Box sx={{ mb: 4 }}>
       {variants.map((variant, variantIndex) => {
         const dynamicAttributeOptions = getAttributeOptions(variantIndex);
         const canRemoveVariant = variants.length > 1;
-        const canAddVariant = variants.length < maxVariants;
-        const canAddAttribute =
-          variant.attributes.length < maxAttributesPerVariant;
         const canRemoveAttribute = variant.attributes.length > 1;
 
         return (
@@ -178,13 +144,11 @@ const VariantsSection: React.FC<VariantsSectionProps> = ({
             sx={{
               mb: 3,
               borderColor: "divider",
-              "&:hover": {
-                borderColor: "primary.main",
-              },
+              "&:hover": { borderColor: "primary.main" },
             }}
           >
             <CardContent>
-              {/* Variant Header */}
+              {/* Header */}
               <Box
                 sx={{
                   display: "flex",
@@ -218,44 +182,33 @@ const VariantsSection: React.FC<VariantsSectionProps> = ({
                       <Delete />
                     </IconButton>
                   )}
-                  {canAddVariant && (
-                    <Button
-                      startIcon={<Add />}
-                      onClick={addVariant}
-                      variant="outlined"
-                      size="small"
-                      color="primary"
-                    >
-                      Add Variant
-                    </Button>
-                  )}
+
+                  <Button
+                    startIcon={<Add />}
+                    onClick={addVariant}
+                    variant="outlined"
+                    size="small"
+                    color="primary"
+                  >
+                    Add Variant
+                  </Button>
                 </Stack>
               </Box>
 
               <Grid container spacing={3}>
-                {/* Variant Type */}
-                <Grid
-                  size={{
-                    sm: 12,
-                    md: 4,
-                  }}
-                >
+                {/* Variant Name */}
+                <Grid size={{ xs: 12, md: 4 }}>
                   <AutocompleteInput
-                    name={`variants.${variantIndex}.name`}
+                    name={`variants[${variantIndex}].name`}
                     label="Variant Type"
-                    placeholder="e.g., Color, Size, Material"
+                    placeholder="e.g., Color, Size"
                     required
                     options={variantNameOptions}
                   />
                 </Grid>
 
                 {/* Attributes */}
-                <Grid
-                  size={{
-                    sm: 12,
-                    md: 8,
-                  }}
-                >
+                <Grid size={{ xs: 12, md: 8 }}>
                   <Box>
                     {variant.attributes.map((attribute, attributeIndex) => (
                       <Grid
@@ -265,41 +218,25 @@ const VariantsSection: React.FC<VariantsSectionProps> = ({
                         alignItems="center"
                         sx={{ mb: 2 }}
                       >
-                        <Grid
-                          size={{
-                            sm: 12,
-                            md: 5,
-                          }}
-                        >
+                        <Grid size={{ xs: 12, md: 5 }}>
                           <AutocompleteInput
-                            name={`variants.${variantIndex}.attributes.${attributeIndex}.value`}
+                            name={`variants[${variantIndex}].attributes[${attributeIndex}].value`}
                             label="Option Value"
-                            placeholder="e.g., Red, Small, Cotton"
+                            placeholder="e.g., Red, Large"
                             required
                             options={dynamicAttributeOptions}
                           />
                         </Grid>
-
-                        <Grid
-                          size={{
-                            sm: 12,
-                            md: 5,
-                          }}
-                        >
+                        <Grid size={{ xs: 12, md: 5 }}>
                           <TextInput
-                            name={`variants.${variantIndex}.attributes.${attributeIndex}.quantity`}
+                            name={`variants[${variantIndex}].attributes[${attributeIndex}].quantity`}
                             label="Stock Quantity"
                             type="number"
                             placeholder="0"
                             required
                           />
                         </Grid>
-
-                        <Grid
-                          size={{
-                            sm: 2,
-                          }}
-                        >
+                        <Grid size={{ xs: 12, md: 2 }}>
                           {canRemoveAttribute && (
                             <IconButton
                               color="error"
@@ -316,17 +253,15 @@ const VariantsSection: React.FC<VariantsSectionProps> = ({
                       </Grid>
                     ))}
 
-                    {canAddAttribute && (
-                      <Button
-                        startIcon={<Add />}
-                        onClick={() => addAttribute(variant.id)}
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                      >
-                        Add Option
-                      </Button>
-                    )}
+                    <Button
+                      startIcon={<Add />}
+                      onClick={() => addAttribute(variant.id)}
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                    >
+                      Add Option
+                    </Button>
                   </Box>
                 </Grid>
               </Grid>

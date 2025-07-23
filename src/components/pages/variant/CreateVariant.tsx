@@ -1,185 +1,150 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Box,
-  Grid,
-  IconButton,
-  Paper,
-  Button,
-  CircularProgress,
-} from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
-import { useMemo, useState } from "react";
-import { nanoid } from "nanoid";
+import React from "react";
+import { Box, Grid, Paper, Button, CircularProgress } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import FormHeader from "../../utils/FormHeader";
 import Loader from "../../../shared/Loader";
-import InputWithSuggestion from "../../utils/input-fields/InputWithSuggestion";
 import {
   useAllVariantQuery,
   useCreateVariantMutation,
 } from "../../../redux/features/variant/variant-api";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
+import AutocompleteInput from "../../utils/input-fields/AutocompleteInput";
+import type { FieldValues } from "react-hook-form";
 
-type AttributeValue = {
-  id: string;
-  value: string;
-};
+const VARIANT_FIELDS = [
+  {
+    name: "size",
+    label: "Size",
+    placeholder: "e.g. S, M, L, XL",
+  },
+  {
+    name: "color",
+    label: "Color",
+    placeholder: "e.g. Red, Blue, Green",
+  },
+  {
+    name: "dressType",
+    label: "Dress Type",
+    placeholder: "e.g. Casual, Formal, Evening",
+  },
+  {
+    name: "sleeve",
+    label: "Sleeve",
+    placeholder: "e.g. Long, Short, Sleeveless",
+  },
+  {
+    name: "material",
+    label: "Material",
+    placeholder: "e.g. Cotton, Silk, Polyester",
+  },
+  {
+    name: "occasion",
+    label: "Occasion",
+    placeholder: "e.g. Work, Party, Wedding",
+  },
+];
 
-type Option = {
-  label: string;
-  value: string;
+type Variant = {
+  name: string;
+  attributes: { value: string }[];
 };
 
 const CreateVariant = () => {
-  const [attributes, setAttributes] = useState<AttributeValue[]>([
-    { id: nanoid(), value: "" },
-  ]);
   const { showToast } = useToast();
-  const { data, isLoading, refetch } = useAllVariantQuery({});
+  const { data, isLoading } = useAllVariantQuery({});
   const [createVariant, { isLoading: isCreating }] = useCreateVariantMutation();
 
-  const variants = useMemo(() => {
+  const variants = React.useMemo<Variant[]>(() => {
     return data?.data?.result?.filter((variant: any) => variant?.name) || [];
   }, [data]);
 
-  const variantNameOptions = useMemo(
-    () => variants.map(({ name }: any) => ({ label: name, value: name })),
+  const variantOptions = React.useMemo(
+    () => variants.map(({ name }) => ({ label: name, value: name })),
     [variants]
   );
 
-  const attributeValueOptions: Option[] = useMemo(() => {
-    const values = variants.flatMap((variant: any) =>
-      variant.attributes?.map((attr: any) => attr.value)
-    );
-    const unique = [...new Set(values)];
-    return unique
-      .filter((val): val is string => typeof val === "string")
-      .map((val) => ({ label: val, value: val }));
-  }, [variants]);
-
-  const handleAddAttribute = () => {
-    setAttributes((prev) => [...prev, { id: nanoid(), value: "" }]);
-  };
-
-  const handleRemoveAttribute = (id: string) => {
-    setAttributes((prev) => prev.filter((attr) => attr.id !== id));
-  };
-
-  //handle variant submit:
-  const onSubmit = async (formData: Record<string, any>) => {
+  const onSubmit = async (formData: FieldValues) => {
     try {
-      const attributeValues: { value: string }[] = attributes.map((attr) => {
-        const input = formData[`attr_${attr.id}`];
-        return {
-          value:
-            typeof input === "object" && input?.value ? input.value : input,
-        };
-      });
+      const variants = VARIANT_FIELDS.filter(
+        (field) => formData[field.name]?.length > 0
+      ).map((field) => ({
+        name: field.name,
+        values: formData[field.name].map((value: string) => ({
+          value: value.trim(),
+        })),
+      }));
 
-      const nameInput = formData.name;
-      const name =
-        typeof nameInput === "object" && nameInput?.value
-          ? nameInput.value
-          : nameInput;
+      if (variants.length === 0) {
+        showToast({
+          message: "Please add at least one variant value",
+          type: "error",
+          position: {
+            horizontal: "right",
+            vertical: "top",
+          },
+        });
+        return;
+      }
 
       const payload = {
-        name,
-        attributes: attributeValues,
+        ...variants,
       };
-      const res = await createVariant(payload).unwrap();
-      if (res?.success) {
-        showToast({
-          message: "Variant created successfully!",
-          type: "success",
-        });
-        refetch();
-      }
-    } catch (err) {
-      console.error(err);
+
+      console.log(payload);
+
+      await createVariant(payload).unwrap();
+
       showToast({
-        message: "Something went wrong",
+        message: "Variant created successfully!",
+        type: "success",
+      });
+    } catch (err) {
+      console.error("Variant creation error:", err);
+      showToast({
+        message: "Failed to create variant",
         type: "error",
-        position: {
-          horizontal: "right",
-          vertical: "top",
-        },
       });
     }
   };
 
-  //handle loading:
   if (isLoading) return <Loader />;
 
   return (
     <Box>
-      <Paper elevation={2} sx={{ p: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <FormHeader
-          title="Create a New Variant"
-          subTitle="Define the type of variant such as color, size, material, etc."
+          title="Create New Variant"
+          subTitle="Define product variants like size, color, material etc."
         />
 
         <ReusableForm onSubmit={onSubmit}>
-          <Grid container spacing={3}>
-            {/* Variant Name */}
-            <Grid size={{ xs: 12 }} mt={4}>
-              <InputWithSuggestion
-                name="name"
-                label="Variant Name"
-                placeholder="e.g. Color, Size"
-                options={variantNameOptions}
-                required
-              />
-            </Grid>
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            {VARIANT_FIELDS.map((field) => (
+              <Grid size={{ xs: 12 }} key={field.name}>
+                <AutocompleteInput
+                  name={field.name}
+                  label={field.label}
+                  placeholder={field.placeholder}
+                  options={variantOptions}
+                  chipVariant="outlined"
+                  multiple
+                  freeSolo
+                  fullWidth
+                />
+              </Grid>
+            ))}
 
-            {/* Attribute Fields */}
             <Grid size={{ xs: 12 }}>
-              {attributes.map((attr) => (
-                <Grid
-                  key={attr.id}
-                  container
-                  spacing={2}
-                  alignItems="center"
-                  sx={{ mb: 1 }}
-                >
-                  <Grid size={{ xs: 10 }}>
-                    <InputWithSuggestion
-                      name={`attr_${attr.id}`}
-                      label="Value"
-                      options={attributeValueOptions}
-                      placeholder="e.g. Red, Large, Cotton"
-                      required
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 2 }}>
-                    {attributes.length > 1 && (
-                      <IconButton
-                        color="error"
-                        onClick={() => handleRemoveAttribute(attr.id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
-              ))}
-
               <Button
-                onClick={handleAddAttribute}
-                variant="outlined"
-                startIcon={<Add />}
-                sx={{ mt: 2 }}
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={isCreating}
               >
-                Add More Values
-              </Button>
-            </Grid>
-
-            {/* Submit Button */}
-            <Grid size={{ xs: 12 }}>
-              <Button type="submit" variant="contained">
                 {isCreating ? (
                   <CircularProgress size={24} sx={{ color: "white" }} />
                 ) : (
-                  "Submit Variant"
+                  "Create Variant"
                 )}
               </Button>
             </Grid>

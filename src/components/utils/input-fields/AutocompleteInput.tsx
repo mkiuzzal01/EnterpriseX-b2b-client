@@ -1,14 +1,13 @@
-"use client";
-
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Chip, useTheme } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
+import type { AutocompleteProps } from "@mui/material/Autocomplete";
 
-export interface Option {
+type Option = {
   label: string;
   value: string;
-}
+};
 
-interface Props {
+type AutocompleteInputProps = {
   name: string;
   label: string;
   options?: Option[];
@@ -17,7 +16,14 @@ interface Props {
   freeSolo?: boolean;
   multiple?: boolean;
   placeholder?: string;
-}
+  variant?: "outlined" | "standard" | "filled";
+  allowCustomValues?: boolean;
+  chipVariant?: "filled" | "outlined";
+  size?: "small" | "medium";
+} & Omit<
+  Partial<AutocompleteProps<string, boolean, boolean, boolean>>,
+  "renderInput" | "options" | "value"
+>;
 
 export default function AutocompleteInput({
   name,
@@ -28,65 +34,119 @@ export default function AutocompleteInput({
   freeSolo = false,
   multiple = false,
   placeholder,
-}: Props) {
+  variant = "outlined",
+  allowCustomValues = false,
+  chipVariant = "outlined",
+  size = "medium",
+  ...autocompleteProps
+}: AutocompleteInputProps) {
+  const theme = useTheme();
   const { control } = useFormContext();
-
-  const valueToLabel = (val: string) => {
-    const found = options?.find((o) => o.value === val);
-    return found ? found.label : val;
-  };
-
-  const labelToValue = (label: string) => {
-    const found = options?.find((o) => o.label === label);
-    return found ? found.value : label;
-  };
 
   return (
     <Controller
       name={name}
       control={control}
-      defaultValue={multiple ? [] : ""}
+      defaultValue={multiple ? [] : null}
       rules={{
-        validate: (value) =>
-          required &&
-          ((multiple && (!Array?.isArray(value) || value?.length === 0)) ||
-            (!multiple && !value))
-            ? `${label} is required`
-            : true,
-      }}
-      render={({ field, fieldState }) => (
-        <Autocomplete
-          multiple={multiple}
-          freeSolo={freeSolo}
-          disabled={disabled}
-          options={options?.map((o) => o?.label)}
-          value={
-            multiple
-              ? (Array.isArray(field?.value) ? field.value : []).map(
-                  valueToLabel
-                )
-              : valueToLabel(field?.value ?? "")
+        validate: (value) => {
+          if (!required) return true;
+          if (multiple) {
+            return Array.isArray(value) && value.length > 0
+              ? true
+              : `${label} is required`;
           }
-          onChange={(_, newVal) => {
-            if (multiple) {
-              const newValues = (newVal as string[])?.map(labelToValue);
-              field.onChange(newValues);
-            } else {
-              field.onChange(labelToValue(newVal as string));
+          return value ? true : `${label} is required`;
+        },
+      }}
+      render={({ field, fieldState }) => {
+        const getOptionLabel = (option: string) => {
+          if (allowCustomValues) return option;
+          return options.find((o) => o.value === option)?.label || option;
+        };
+
+        const getSelectedValue = () => {
+          if (multiple) {
+            return Array.isArray(field.value)
+              ? field.value.map((v) => getOptionLabel(v))
+              : [];
+          }
+          return field.value ? getOptionLabel(field.value) : null;
+        };
+
+        const handleChange = (
+          _: React.SyntheticEvent,
+          newValue: string | string[] | null
+        ) => {
+          if (multiple) {
+            const values = Array.isArray(newValue) ? newValue : [];
+            field.onChange(
+              values.map((v) =>
+                allowCustomValues
+                  ? v
+                  : options.find((o) => o.label === v)?.value || v
+              )
+            );
+          } else {
+            field.onChange(
+              newValue
+                ? allowCustomValues
+                  ? newValue
+                  : options.find((o) => o.label === newValue)?.value || newValue
+                : null
+            );
+          }
+        };
+
+        return (
+          <Autocomplete
+            {...autocompleteProps}
+            multiple={multiple}
+            freeSolo={allowCustomValues || freeSolo}
+            disabled={disabled}
+            options={options.map((option) => option.label)}
+            value={getSelectedValue()}
+            onChange={handleChange}
+            onBlur={field.onBlur}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant={variant}
+                label={label}
+                placeholder={placeholder}
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                required={required}
+                size={size}
+              />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={index}
+                  label={option}
+                  variant={chipVariant}
+                  size={size}
+                  sx={{
+                    marginRight: theme.spacing(0.5),
+                    marginBottom: theme.spacing(0.5),
+                  }}
+                />
+              ))
             }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={label}
-              placeholder={placeholder}
-              error={!!fieldState?.error}
-              helperText={fieldState.error?.message}
-              required={required}
-            />
-          )}
-        />
-      )}
+            sx={{
+              "& .MuiAutocomplete-tag": {
+                margin: theme.spacing(0.5),
+              },
+            }}
+            isOptionEqualToValue={(option, value) =>
+              option.toLowerCase() === value?.toLowerCase()
+            }
+            getOptionLabel={getOptionLabel}
+          />
+        );
+      }}
     />
   );
 }

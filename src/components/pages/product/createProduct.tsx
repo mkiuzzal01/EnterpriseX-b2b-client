@@ -1,5 +1,6 @@
+"use client";
 import { useState } from "react";
-import { Box, Button, Grid, Paper } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Paper } from "@mui/material";
 import {
   Category as CategoryIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -28,65 +29,28 @@ import { useAppSelector } from "../../../redux/hooks";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import type { FieldValues } from "react-hook-form";
 
-type Attribute = {
-  id: string;
-  value: string;
-  quantity: number;
-};
-
-type Variant = {
-  id: string;
-  name: string;
-  attributes: Attribute[];
-};
-
 const CreateProduct = () => {
   const { showToast } = useToast();
-
-  // Drawer state for image selector
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const selectedId = useAppSelector((state) => state?.selectedId?.selectedId);
 
-  // Selected image id from global redux state
-  const selectedId = useAppSelector((state) => state.selectedId.selectedId);
-
-  // Fetch selected image details for preview
   const { data: image, isLoading: isImageLoading } = useGetImageByIdQuery(
     selectedId || null
   );
-
-  // Fetch main category data for selector dropdown
   const { data: mainCategoryData, isLoading: isMainCatLoading } =
     useAllMainCategoryQuery({});
-
-  // Fetch variant & attributes data for autocomplete options
   const { data: variantData, isLoading: isVariantLoading } = useAllVariantQuery(
     {}
   );
-
-  // Mutation for product creation
   const [createProduct, { isLoading: isCreatingProduct }] =
     useCreateProductMutation();
 
-  // Utility to generate unique IDs
-  const generateId = () => crypto.randomUUID?.() || String(Date.now());
-
-  // Local state for variants with IDs
-  const [variants, setVariants] = useState<Variant[]>([
-    {
-      id: generateId(),
-      name: "",
-      attributes: [{ id: generateId(), value: "", quantity: 0 }],
-    },
-  ]);
-
-  // Build variant name options for Autocomplete
   const variantNameOptions =
     variantData?.data?.result?.map((v: any) => ({
       label: v.name,
       value: v.name,
     })) ?? [];
 
-  // Build attribute options keyed by variant name
   const attributeOptions =
     variantData?.data?.result?.reduce(
       (acc: Record<string, any[]>, variant: any) => {
@@ -99,68 +63,38 @@ const CreateProduct = () => {
       {}
     ) ?? {};
 
-  // Submission handler
   const onSubmit = async (data: FieldValues) => {
     try {
-
-      console.log(variants);
-      if (!selectedId) {
-        showToast({ message: "Product image is required.", type: "warning" });
-        return;
-      }
-
       const formattedProduct = {
-        productCode: data?.productCode,
-        title: data?.title,
-        subTitle: data?.subTitle,
-        price: String(data?.price ?? ""),
-        discount: String(data?.discount ?? ""),
-        parentageForSeller: String(data?.parentageForSeller ?? ""),
-        status: data?.status,
-        activity: data?.activity,
-        description: data?.description,
-        optionalLinks: data?.optionalLinks,
+        productCode: data.productCode,
+        title: data.title,
+        subTitle: data.subTitle,
+        price: String(data.price ?? ""),
+        discount: String(data.discount ?? ""),
+        totalQuantity: String(data.totalQuantity ?? ""),
+        parentageForSeller: String(data.parentageForSeller ?? ""),
+        status: data.status,
+        activity: data.activity,
+        description: data.description,
+        optionalLinks: data.optionalLinks,
         productImage: selectedId,
         categories: {
-          mainCategory: data?.mainCategory,
-          category: data?.category,
-          subCategory: data?.subCategory,
+          mainCategory: data.mainCategory,
+          category: data.category,
+          subCategory: data.subCategory,
         },
-        variants: variants.map((v) => ({
-          id: v.id,
-          name: v.name || "",
-          attributes: v.attributes.map((attr) => ({
-            id: attr.id,
-            value: attr.value || "",
-            quantity: String(attr.quantity ?? "0"),
-          })),
-        })),
+        variants: data.variants,
       };
 
-      console.log(formattedProduct);
-
+      console.log("Submitting:", formattedProduct);
       await createProduct(formattedProduct).unwrap();
-
       showToast({ message: "Product created successfully!", type: "success" });
-
-      // Reset variants state with IDs
-      setVariants([
-        {
-          id: generateId(),
-          name: "",
-          attributes: [{ id: generateId(), value: "", quantity: 0 }],
-        },
-      ]);
-
-      // You can also reset the form fields here with react-hook-form reset if needed
-    } catch (error) {
-      console.error("Error creating product:", error);
-      showToast({ message: "Failed to create product.", type: "error" });
+    } catch {
+      showToast({ message: "something went wrong", type: "error" });
     }
   };
 
-  // Show loader while fetching categories or variants
-  if (isMainCatLoading || isVariantLoading ) return <Loader />;
+  if (isMainCatLoading || isVariantLoading) return <Loader />;
 
   return (
     <Box>
@@ -172,7 +106,7 @@ const CreateProduct = () => {
 
         <ReusableForm onSubmit={onSubmit}>
           <Box>
-            {/* Image Upload */}
+            {/* Product Image Section */}
             <SectionHeader
               icon={<FaProductHunt />}
               title="Product Image"
@@ -232,24 +166,13 @@ const CreateProduct = () => {
               </Box>
             </Box>
 
-            <ReusableDrawer
-              width="50%"
-              open={drawerOpen}
-              onClose={() => {
-                setDrawerOpen(false);
-                return true;
-              }}
-            >
-              <Images />
-            </ReusableDrawer>
-
-            {/* Basic Info */}
+            {/* Basic Information */}
             <SectionHeader
               icon={<InfoOutlinedIcon />}
               title="Basic Information"
               subtitle="Primary product details"
             />
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextInput name="productCode" label="Product Code" required />
               </Grid>
@@ -261,14 +184,14 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
 
-            {/* Pricing */}
+            {/* Pricing & Inventory */}
             <SectionHeader
               icon={<AttachMoneyIcon />}
               title="Pricing & Inventory"
               subtitle="Manage product stock and pricing"
             />
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 4 }}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextInput
                   name="price"
                   label="Base Price"
@@ -276,7 +199,7 @@ const CreateProduct = () => {
                   required
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextInput
                   name="discount"
                   label="Discount"
@@ -284,7 +207,15 @@ const CreateProduct = () => {
                   required
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid size={{ xs: 12, md: 3 }}>
+                <TextInput
+                  name="totalQuantity"
+                  label="Total quantity"
+                  type="number"
+                  required
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextInput
                   name="parentageForSeller"
                   label="Seller Percentage"
@@ -294,21 +225,23 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
 
-            {/* Categories */}
+            {/* Category Information */}
             <SectionHeader
               icon={<CategoryIcon />}
               title="Category Information"
               subtitle="Specify product categories"
             />
-            <CategorySelector mainCategoryData={mainCategoryData} />
+            <Box sx={{ mb: 4 }}>
+              <CategorySelector mainCategoryData={mainCategoryData} />
+            </Box>
 
-            {/* Status */}
+            {/* Status & Activity */}
             <SectionHeader
               icon={<InventoryIcon />}
               title="Status & Activity"
               subtitle="Set product visibility and availability"
             />
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <SelectInputField
                   name="status"
@@ -327,13 +260,13 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
 
-            {/* Description */}
+            {/* Product Description */}
             <SectionHeader
               icon={<DescriptionIcon />}
               title="Product Description"
               subtitle="Provide product details"
             />
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid size={{ xs: 12 }}>
                 <TextInput name="optionalLinks" label="Optional Link" />
               </Grid>
@@ -348,21 +281,19 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
 
-            {/* Variants */}
+            {/* Product Variants */}
             <SectionHeader
               icon={<StyleIcon />}
               title="Product Variants"
               subtitle="Add different versions of your product"
             />
             <VariantsSection
-              variants={variants}
-              setVariants={setVariants}
               variantNameOptions={variantNameOptions}
               attributeOptions={attributeOptions}
             />
 
             {/* Submit Button */}
-            <Box className="flex mt-4">
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 4 }}>
               <Button
                 type="submit"
                 variant="contained"
@@ -370,13 +301,30 @@ const CreateProduct = () => {
                 size="large"
                 startIcon={<SaveIcon />}
                 disabled={isCreatingProduct}
+                sx={{ minWidth: 180 }}
               >
-                {isCreatingProduct ? "Creating..." : "Create Product"}
+                {isCreatingProduct ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Create Product"
+                )}
               </Button>
             </Box>
           </Box>
         </ReusableForm>
       </Paper>
+
+      {/* Image Selection Drawer */}
+      <ReusableDrawer
+        width="50%"
+        open={drawerOpen}
+        onClose={() => {
+          setDrawerOpen(false);
+          return true;
+        }}
+      >
+        <Images />
+      </ReusableDrawer>
     </Box>
   );
 };
