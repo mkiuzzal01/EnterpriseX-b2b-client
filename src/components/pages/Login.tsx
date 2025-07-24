@@ -26,6 +26,7 @@ const Login = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       const res = await login(data).unwrap();
+      console.log(res);
       const user = verifyToken(res.data.accessToken) as TUser;
       dispatch(setUser({ user: user, token: res.data.accessToken }));
       navigate("/overview", { replace: true });
