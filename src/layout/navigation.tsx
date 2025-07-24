@@ -11,9 +11,8 @@ import { IoIosNotifications } from "react-icons/io";
 import { BsChatSquareQuoteFill } from "react-icons/bs";
 import { MdFeedback } from "react-icons/md";
 import { RiGalleryFill } from "react-icons/ri";
-import type { Navigation } from "@toolpad/core/AppProvider";
 
-export const navigation: Navigation = [
+export const navigation = [
   {
     title: "Overview",
     icon: <FaArrowTrendUp size={20} />,
